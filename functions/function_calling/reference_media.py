@@ -34,6 +34,12 @@ class _RefMediaContext:
         self.workspace_root.mkdir(parents=True, exist_ok=True)
 
 
+_NON_VIDEO_YT_PATTERN = re.compile(
+    r"youtube\.com/(@|channel/|c/|user/|feed|trending|playlist\?)",
+    re.IGNORECASE,
+)
+
+
 def download_video_snippet(
     url: str,
     *,
@@ -45,7 +51,12 @@ def download_video_snippet(
 
     Uses yt-dlp to download a short snippet at 720p max resolution.
     The video is saved to the workspace as an MP4 file.
+    Rejects YouTube channel/user/playlist URLs that are not direct video links.
     """
+    if _NON_VIDEO_YT_PATTERN.search(url):
+        logger.warning("download_video_snippet: rejected non-video URL: %s", url)
+        return {"error": f"URL is a YouTube channel/user/playlist page, not a video: {url}"}
+
     ctx = _RefMediaContext(_context)
     target = ctx.workspace_root / filename
     target.parent.mkdir(parents=True, exist_ok=True)

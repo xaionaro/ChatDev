@@ -646,7 +646,8 @@ graph:
           2. Look for the "## Reference URLs" section. Extract any URLs found there.
              Also scan the entire GDD for YouTube links (youtube.com, youtu.be) or
              image URLs (.png, .jpg, .jpeg, .gif, .webp).
-          3. For each YouTube URL found:
+          3. For each YouTube **video** URL found (must contain /watch?v= or youtu.be/;
+             skip channel URLs like youtube.com/@..., /channel/, /c/, /user/):
              a. Call `download_video_snippet` with the URL (duration_seconds=60)
              b. Call `extract_key_frames` with the downloaded video path (max_frames=6)
              c. For each extracted frame, call `analyze_visual_reference` with the frame path
