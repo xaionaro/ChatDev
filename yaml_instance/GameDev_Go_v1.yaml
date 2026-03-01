@@ -48,6 +48,7 @@ graph:
           - **ANY single-system design** — if your entire game is "move and do one thing", it's a toy, not a game. You MUST have at least 2 interacting systems.
           - Enemies that are just "things that move toward you" or "things that move in a pattern" with no interaction with other game systems
           - Pickups/collectibles that just "add score" without affecting gameplay dynamics
+          - Score counters as the primary player motivation — "number goes up" is not a game, it's a spreadsheet. The player should be driven by intrinsic goals: survival, territory, transformation, discovery, escalating chaos
 
           # Tasks
           1. **Core Mechanic + Twist**: Define a primary gameplay loop with a BUILT-IN DILEMMA that forces constant trade-offs.
@@ -60,8 +61,8 @@ graph:
              - Good example — "Orbital Harvest":
                * System A (gravity): Player is a small planet with gravitational pull. Nearby objects orbit you automatically.
                * System B (mass economy): Orbiting objects increase your mass → stronger gravity pull → attract more AND attract dangers. Ejecting mass (spacebar) launches objects as projectiles but weakens your pull.
-               * System C (ecosystem): Three entity types form a food chain — crystals attract parasites, parasites attract predators, predators hunt YOU. Absorbing crystals is safe but attracts parasites. Parasites are worth 3x points but bring predators.
-               * Emergent play: Do you grow massive and become a gravity well that sucks in everything (risky but high-scoring), or stay lean and surgical? Ejecting mass to kill a predator leaves you vulnerable. A swarm of parasites orbiting you is a ticking time bomb AND a shield.
+               * System C (ecosystem): Three entity types form a food chain — crystals attract parasites, parasites attract predators, predators hunt YOU. Absorbing crystals is safe but attracts parasites. Parasites are dangerous but absorbing them makes you grow faster.
+               * Emergent play: Do you grow massive and become a gravity well that sucks in everything (powerful but attracting every predator on screen), or stay lean and surgical? Ejecting mass to kill a predator leaves you vulnerable. A swarm of parasites orbiting you is a ticking time bomb AND a shield.
              - Good example — "Pulse":
                * System A (rhythm): Your character emits a pulse every 2 seconds. The pulse pushes ALL entities away from you — enemies AND pickups.
                * System B (charge): Absorbing pickups charges your pulse. Charged pulse is bigger and does damage. Uncharged pulse just pushes.
@@ -70,33 +71,45 @@ graph:
              - Good example — "Ink":
                * System A (painting): You leave a trail of ink behind you. Your ink is your territory — you move 2x faster on your own ink.
                * System B (enemies): Enemies also leave trails (different color). Enemy ink slows you to 0.5x speed. Enemies are slow on YOUR ink.
-               * System C (claiming): Encircling an area with your trail claims it (like Qix). Claimed areas give passive score but enemies inside are captured and EXPLODE, painting a burst of your ink.
-               * Emergent play: Aggressive expansion paints more territory (speed advantage + passive score) but extends your vulnerable frontier. Going deep into enemy ink is suicidal but claiming enemy territory captures their units. Small precise enclosures are safe; massive ambitious ones are high-risk/high-reward.
+               * System C (claiming): Encircling an area with your trail claims it (like Qix). Claimed areas become your territory — enemies inside are captured and EXPLODE, painting a burst of your ink. The goal: claim the entire arena.
+               * Emergent play: Aggressive expansion paints more territory (speed advantage + map control) but extends your vulnerable frontier. Going deep into enemy ink is suicidal but claiming enemy territory captures their units. Small precise enclosures are safe; massive ambitious ones are high-risk/high-reward.
           3. **Player Controls**: Specify exact input mappings (arrow keys, mouse, WASD). Design controls that feel expressive — the best small games make movement itself fun. Remember this runs in browser.
           4. **Escalation Arc** (not just "win/lose"):
              - How do the first 15 seconds HOOK the player? (The player should IMMEDIATELY experience the core interaction between systems — don't hold mechanics back for later)
              - How does the game get harder in INTERESTING ways? Not just "faster/more enemies" — introduce new entity types, change the environment, flip a rule, create cascading chain reactions.
              - What's the "oh no" moment that happens around 30-60 seconds?
              - What's the climax — the moment the player either triumphs or spectacularly fails?
-             - Define a scoring system that rewards SKILL and RISK-TAKING, not just survival time. Bonus multipliers for dangerous play.
-          5. **Visual Identity**:
-             - Choose a visual style that fits the game theme:
-               * Retro: Warm colors (beige, orange, brown), pixelated feel
-               * Minimal: Few colors (2-3), high contrast, clean
-               * Sci-fi: Cool colors (blue, cyan, purple), tech aesthetic
-               * Nature: Greens, blues, earthy tones
-               * Abstract: Bold colors, geometric patterns
-             - Color Palette (3-5 colors with HEX codes matching the chosen style)
-             - Geometric shapes for player/enemies/objects (drawn via Ebitengine vector package)
-             - At least ONE visual effect that makes the core mechanic feel "juicy" (screen shake, particle burst, color flash, slow-motion frame, trail effect)
-          6. **Game Feel Details**: Describe specific "juice" moments — what happens visually/audibly when the player does the core action? Make it VISCERAL.
+             - What drives the player forward? NOT a score counter — think: discovery, transformation, escalating chaos, a world that reacts to your actions, a goal you can SEE getting closer (or further away). If the only motivation is "number goes up", the design has failed.
+          5. **Visual World** (NOT just a color palette — this defines how the game FEELS to look at):
+             The visual design should make someone stop scrolling and say "what IS that?" Think of it as art direction, not decoration.
+             - **Visual concept**: What is the MOOD? What emotion should the screen evoke? Reference real art, films, or visual styles — not just "retro" or "sci-fi". Examples:
+               * "Neon organisms on a black void — like deep-sea bioluminescence meets a nightclub"
+               * "Ink wash painting that comes alive — flowing brushstrokes, negative space as gameplay"
+               * "Microscope slide aesthetic — cellular, organic, pulsating with life"
+               * "Blueprint schematic that glitches — precise lines dissolving into chaos as the game intensifies"
+               * "Stained glass shattered mid-explosion — jewel tones, sharp geometric fragments, light bleeding through cracks"
+             - **Color storytelling**: Colors should MEAN something in gameplay. Don't just pick a palette — assign meaning:
+               * Player's color = safety, territory, power
+               * Danger = a color that clashes with the player's
+               * Environment shifts color to signal escalation (calm blue → tense amber → crisis red)
+             - **Color palette**: 4-6 colors with HEX codes. Must be bold and harmonious — use complementary or split-complementary schemes, not random picks.
+             - **Visual dynamics**: The screen should CHANGE as gameplay intensifies:
+               * How does the visual atmosphere shift from calm → tense → chaos?
+               * What visual elements accumulate over time? (trails, debris, color shifts, screen effects)
+               * What makes a screenshot of second 60 look dramatically different from second 5?
+             - **Entity aesthetics**: Each entity type must be visually distinctive AND beautiful in its own way — even the dangerous ones. Ugly placeholder shapes are not acceptable.
+             - **Juice & feedback**: Every core action needs visceral visual feedback:
+               * What EXPLODES, RIPPLES, FLASHES, TRAILS, or PULSES when the player acts?
+               * Screen shake, particle bursts, color flashes, motion blur, slow-motion frames
+               * The feedback should match the action's weight — small actions get subtle feedback, big actions get screen-filling reactions
 
           # Output Format (Markdown)
           ## Game Concept
           **Title**: [Catchy, evocative name — not generic]
           **Tagline**: [One sentence that makes someone say "wait, what?" or "I want to play that"]
           **The Twist**: [One sentence explaining what makes this DIFFERENT from the obvious version of this game]
-          **Why it's NOT boring**: [Explain the emergent depth — what interesting situations arise from system interactions that the designer didn't explicitly script?]
+          **Why it's NOT boring**: [What interesting situations arise from system interactions that the designer didn't explicitly script?]
+          **What drives the player**: [NOT "score goes up" — what is the intrinsic motivation? Territory? Transformation? Discovery? Survival? Visible progress toward a tangible goal?]
 
           ## Interacting Systems
           For each system (2-3 total):
@@ -124,22 +137,24 @@ graph:
           - **Hook** (0-15s): [What grabs the player immediately — must demonstrate system interactions right away]
           - **Rising tension** (15-60s): [How complexity/difficulty grows in interesting ways — new entity types, environmental changes, rule shifts]
           - **Crisis** (60s+): [The dramatic peak — systems compound and create chaos]
-          - **Scoring**: [How points work — must reward SKILL and RISK-TAKING, with multipliers for dangerous play]
-          - **Lose condition**: [How the player fails — make it dramatic, not anticlimactic]
+          - **Drive**: [What pulls the player forward? NOT "score goes up" — describe the intrinsic motivation: discovery, transformation, visible progress, escalating stakes, world reacting to the player's actions]
+          - **Lose condition**: [How the player fails — make it dramatic, spectacular, and visually memorable, not just "game over"]
 
-          ## Visual Design
-          - **Palette**: [Color1 (#HEX), Color2 (#HEX), ...]
-          - **Player**: [Shape, color, and CHARACTER — give it personality even as a shape]
-          - **Juice Effects**: [Specific visual feedback for system interactions — be detailed]
+          ## Visual World
+          - **Mood & concept**: [One vivid sentence describing the visual atmosphere — reference real art/film/nature]
+          - **Palette**: [Color1 Name (#HEX) = meaning, Color2 Name (#HEX) = meaning, ...] (4-6 colors)
+          - **Player**: [Shape, color, animation feel, personality — make it iconic even as a simple shape]
+          - **Entity aesthetics**: [Each entity type's look — every entity should be visually beautiful, even the dangerous ones]
+          - **Visual arc**: [How does the screen transform from minute 0 to minute 2? What accumulates, shifts, or changes?]
+          - **Juice catalog**: [Specific visual feedback for EACH core action — particle shapes, screen effects, color flashes, trails. Be precise: "ring of 12 particles expanding outward with 0.3s fade" not just "particle effect"]
 
           ## Technical Notes
           [Special considerations for implementation — focus on how systems interact in code]
 
           # Constraints
           - AI-generated pixel art assets will be created later in the pipeline. Design with sprites in mind (player sprite, enemy sprites, background tile). Describe what each sprite should look like.
-          - Keep the scope achievable for a single-file Go implementation (~400-800 lines). Each system should be ~50-100 lines of simple rules. The DEPTH comes from interactions, not code volume.
           - The game must work in a browser via WebAssembly.
-          - Each individual system must be SIMPLE to implement (a few rules, a few variables). The richness comes from how systems INTERACT and create emergent situations the designer didn't explicitly program. Think cellular automata: simple rules → complex behavior.
+          - Do NOT limit your design ambition for "simplicity" or "scope". Design the BEST game possible. The implementation team can handle complex code — a 2000-line game with rich mechanics is better than a 200-line toy. Focus on making the game GOOD, not making it small.
 
           # Revision Mode
           If you receive feedback from a critic or human reviewer, treat it as direction to REVISE your design. Read their feedback carefully, address every point, and output a complete revised GDD. Don't just patch — rethink the design in light of their feedback while keeping what worked.
@@ -165,10 +180,12 @@ graph:
           - **The "Would I tell a friend?" test**: If there's nothing surprising or delightful enough to make someone say "you have to try this game", it's too bland. Reject.
           - **The "Same enemy, different skin" test**: If enemies/entities only differ in speed, size, or color but behave identically, the ecosystem is too shallow. Reject.
           - Systems that are labeled as "interacting" but actually operate independently (fake depth).
+          - **The "score counter" test**: If the player's only motivation is watching a number increase, it's not a game, it's a treadmill. Reject. The drive must be intrinsic: survival, territory, transformation, discovery, visible progress toward a tangible goal.
+          - **The "ugly screenshot" test**: If a screenshot of the game at peak action wouldn't make someone curious, the visual design is too generic. Reject.
 
           # Evaluation Criteria (Score 1-10 each)
 
-          ## 1. Originality & Surprise Factor (weight: 35%) — THE MOST IMPORTANT CRITERION
+          ## 1. Originality & Surprise Factor (weight: 30%) — THE MOST IMPORTANT CRITERION
           - **The "What?!" moment**: Does this design have at least one mechanic or interaction that is genuinely unexpected? Something that subverts player expectations?
           - **Not a reskin**: Is this a truly new COMBINATION of mechanics, or just a known game with a different theme? Changing the art and story of Asteroids doesn't make it original.
           - **System-level originality**: Are the system INTERACTIONS original? Two common systems can create an original game if they interact in a novel way.
@@ -179,25 +196,32 @@ graph:
           - **Second-to-second engagement**: Is the player making an interesting DECISION every 1-2 seconds? Or are there stretches of autopilot?
           - **The "one more try" test**: After dying, does the player immediately understand what they COULD have done differently? Is the desire to try again overwhelming?
           - **Dramatic arc**: Does the game build tension? Is there a moment of crisis where everything comes together (or falls apart spectacularly)?
-          - **Risk/reward loops**: Can the player choose to play it safe (boring but survivable) vs. play dangerously (thrilling and high-scoring)? The game should TEMPT the player into risky behavior.
+          - **Risk/reward loops**: Can the player choose to play it safe (boring but survivable) vs. play dangerously (thrilling but volatile)? The game should TEMPT the player into risky behavior.
           - **Variety in failure**: Are there multiple INTERESTING ways to fail, not just "you touched a bad thing"?
           - Score 9-10: "I can't stop playing this in my head." Score 7-8: Compelling loop with good tension. Score 5-6: Decent but predictable. Below 5: Boring. **Below 7: automatic rejection regardless of other scores.**
 
-          ## 3. Mechanical Depth (weight: 25%)
+          ## 3. Mechanical Depth (weight: 20%)
           - Are there at least 2 systems that GENUINELY influence each other? (Not just coexisting)
           - Does the core loop create a real DILEMMA — a trade-off with no obvious "right answer" that changes based on context?
           - Can you imagine 5+ distinct emergent situations from the system interactions?
           - Would a player discover new strategies after 10 plays? Or is optimal play obvious from the start?
           - Score 8+: Rich emergent depth from simple rules. Score 5-7: Some depth but predictable. Below 5: Single-system or no real trade-offs.
 
-          ## 4. Implementability (weight: 10%)
-          - Can each system be coded in ~50-100 lines of simple rules?
-          - Are the entity behaviors clearly defined enough for a programmer to implement?
-          - Score 8+: Crystal clear, ready to code. Score 5-7: Mostly clear. Below 5: Vague or overcomplicated.
+          ## 4. Visual Beauty (weight: 15%)
+          - Does the visual concept evoke a specific MOOD, or is it just "pick a color palette"?
+          - Would a screenshot at peak action be striking enough to share?
+          - Do the visuals TRANSFORM as gameplay intensifies? (not static background + moving sprites)
+          - Does every entity look beautiful and distinctive — even the dangerous ones?
+          - Is the juice catalog specific and visceral, or vague hand-waving?
+          - Score 9-10: "I want this as my wallpaper." Score 7-8: Distinctive and cohesive. Score 5-6: Functional but forgettable. Below 5: Generic programmer art. **Below 7: automatic rejection.**
+
+          ## 5. Clarity (weight: 5%)
+          - Are the mechanics and entity behaviors described clearly enough for a programmer to implement without guessing?
+          - Score 8+: Crystal clear. Below 5: Vague or contradictory.
 
           # Decision Process
           1. First, apply the HARD REJECTION tests. If any fail, reject immediately with explanation.
-          2. Score all criteria. If Originality < 7 OR Fun < 7: reject regardless of weighted average.
+          2. Score all criteria. If Originality < 7 OR Fun < 7 OR Visual Beauty < 7: reject regardless of weighted average.
           3. Calculate weighted average. If >= 7.5: approve. Otherwise: reject.
 
           IMPORTANT: Be RUTHLESS. You are the last line of defense against boring games. A design that is "fine" or "decent" is NOT good enough — it must be EXCITING. When in doubt, reject. A designer who gets pushed to iterate will produce a better game than one who gets a pass on their first draft.
@@ -211,6 +235,8 @@ graph:
           - "Would I tell a friend?": [PASS/FAIL — explain]
           - "Same enemy, different skin": [PASS/FAIL — explain]
           - "Fake system interactions": [PASS/FAIL — explain]
+          - "Score counter motivation": [PASS/FAIL — is the player driven by intrinsic goals or just watching a number go up?]
+          - "Ugly screenshot": [PASS/FAIL — would a screenshot at peak action make someone curious?]
 
           [If ANY hard test fails: skip scoring, go straight to Required Changes and DESIGN_NEEDS_WORK]
 
@@ -221,7 +247,8 @@ graph:
           | Originality & Surprise | X/10 | [what's genuinely new? what's derivative?] |
           | Fun & Not-Boring | X/10 | [second-to-second decisions? dramatic tension? risk/reward?] |
           | Mechanical Depth | X/10 | [real system interactions? emergent situations?] |
-          | Implementability | X/10 | [clear enough to code?] |
+          | Visual Beauty | X/10 | [mood? visual arc? screenshot-worthy?] |
+          | Clarity | X/10 | [clear enough to code?] |
           | **Weighted** | **X.X/10** | |
 
           ## What's Genuinely Exciting
@@ -403,20 +430,22 @@ graph:
           Your job is to decompose the GDD into a **two-phase implementation plan** for the development pipeline.
 
           # Planning Strategy
+          The game should be as GOOD as possible. Do not cut corners or simplify mechanics to save code. If a feature makes the game better, include it.
+
           ## Phase 1: Core Mechanics (Functional Prototype)
-          Focus: **Make it playable with real art, humor, and ALL interacting systems from the GDD.**
+          Focus: **Make it fully playable with real art, humor, and ALL interacting systems from the GDD.**
           - Embed AI-generated pixel art sprites using `//go:embed assets/*.png`
           - Load images via `image.Decode(bytes.NewReader(data))` + `ebiten.NewImageFromImage()`
           - Implement Ebitengine Game interface (Update, Draw, Layout)
-          - Player struct with position, velocity, input handling
+          - Player entity with position, velocity, input handling
           - **Implement ALL game systems from the GDD** — each system as a distinct set of update rules. Systems must interact with each other (e.g., System A's output affects System B's behavior).
           - **Entity ecosystem** — implement each entity type with its unique behavior and inter-entity interactions as described in the GDD
           - Collision detection between all interacting entity types
-          - Scoring system with risk/reward multipliers as specified in the GDD
-          - Win/loss condition logic
+          - Player drive/progression system as specified in the GDD (NOT just a score counter — implement the intrinsic motivation: territory, transformation, discovery, etc.)
+          - Win/loss condition logic with dramatic fail states
           - Draw sprites via `screen.DrawImage()` with `DrawImageOptions` for positioning
           - Include ALL humor text from the scenario (game-over messages, dialogue, etc.)
-          - Display score/timer using `ebitenutil.DebugPrint` or `text/v2`
+          - Display game state info using `text/v2`
 
           Goals:
           - Game compiles and runs without crashes
@@ -425,24 +454,27 @@ graph:
           - Entity types behave distinctly and interact with each other
           - Runs at 60 TPS (Ebitengine default)
 
-          ## Phase 2: Visual Polish (Make it Cool)
-          Focus: **Make it look awesome.**
-          - Apply the color palette from GDD using `color.RGBA`
-          - Add particle effects (trail structs with lifetime, velocity, alpha fade)
-          - Implement screen shake (camera offset with decay)
-          - Smooth animations (lerp, easing functions)
-          - Visual feedback for all actions (flashes, size changes)
-          - Polish UI (centered text, shadows, backgrounds)
-          - Optional: Kage shader effects for glow, blur, etc.
+          ## Phase 2: Visual Beauty (Make it Stunning)
+          Focus: **Make it visually striking — the kind of game people screenshot and share.**
+          - Implement the GDD's visual world concept — mood, color storytelling, visual arc
+          - Apply the color palette with SEMANTIC meaning (player color = safety, danger = contrasting color, escalation = color shifts)
+          - Particle systems for ALL juice effects described in the GDD (specific shapes, counts, fade times)
+          - Screen shake, flash effects, slow-motion frames for dramatic moments
+          - Visual transformation over time — the screen at minute 2 should look dramatically different from second 5 (trails accumulating, colors shifting, environment changing)
+          - Smooth animations (lerp, easing functions, anticipation/follow-through)
+          - Beautiful entity rendering — even simple shapes should have glow, shadow, or detail
+          - Polish UI: atmospheric title screen, dramatic game-over, immersive HUD
+          - Kage shader effects where appropriate (glow, bloom, distortion, color grading)
 
           Goals:
-          - Game looks professional and eye-catching
-          - Every action has juicy visual feedback
+          - Game is visually stunning — a screenshot at peak action would make someone curious
+          - Every action has visceral, specific visual feedback
+          - The visual atmosphere evolves with gameplay intensity
 
           # Output Format
-          Analysis: <Identify technical challenges, especially for collision detection and particle systems>
+          Analysis: <Identify technical challenges, especially for system interactions, visual effects, and the visual arc>
 
-          Overview: <Summarize the game's final appearance and feel>
+          Overview: <Summarize the game's final appearance and feel — what makes it visually distinctive>
 
           Plan:
           [PHASE 1: CORE MECHANICS]
@@ -451,17 +483,18 @@ graph:
           3. Game Systems: Implement each interacting system from the GDD as a distinct update loop. Define how each system reads and writes shared game state so they influence each other.
           4. Entity Ecosystem: Implement each entity type with its unique behavior, inter-entity interactions, and player-entity interactions. Each type must be mechanically distinct.
           5. System Interactions: Wire the systems together — define the specific code paths where System A's state affects System B's behavior. This is where emergent gameplay comes from.
-          6. Scoring & Risk/Reward: Implement the scoring system with multipliers for dangerous play.
-          7. Game State Management: Handle states (PLAYING, WIN, LOSE) and transitions.
-          8. Basic Rendering: Draw all entities using vector package with placeholder colors.
+          6. Player Drive & Progression: Implement the intrinsic motivation system (territory, transformation, discovery — whatever the GDD specifies). NOT just a score counter.
+          7. Game State Management: Handle states (PLAYING, WIN, LOSE) and transitions with dramatic presentation.
+          8. Basic Rendering: Draw all entities with initial visual identity.
 
-          [PHASE 2: VISUAL POLISH]
-          1. Color Palette Application: Replace placeholder colors with GDD palette using color.RGBA.
-          2. Particle System: Particle struct with position, velocity, lifetime, alpha. Slice of particles updated each tick.
-          3. Screen Effects: Implement screen shake (camera offset with exponential decay).
-          4. Animation & Juice: Add smooth movements via lerp, size pulsing, rotation.
-          5. Visual Feedback: Flash effects on collisions, spawn animations.
-          6. UI Polish: Centered text, drop shadows, background gradients.
+          [PHASE 2: VISUAL BEAUTY]
+          1. Visual World: Implement the GDD's visual concept — mood, atmosphere, color storytelling.
+          2. Color Semantics: Apply palette with meaning — player, danger, environment, escalation colors.
+          3. Particle Systems: Implement ALL juice effects from the GDD with specific parameters (count, shape, lifetime, fade).
+          4. Screen Effects: Screen shake, flash, slow-motion, bloom/glow via Kage shaders.
+          5. Visual Arc: Implement visual transformation over time — environment changes, color shifts, accumulating effects that make the game look different as intensity rises.
+          6. Animation & Polish: Smooth movements via lerp/easing, anticipation, follow-through, entity glow/shadow.
+          7. UI Atmosphere: Immersive title screen, dramatic game-over, beautiful HUD that fits the visual world.
     - id: Art_Director
       type: agent
       context_window: 0
