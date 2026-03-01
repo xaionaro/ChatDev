@@ -685,10 +685,9 @@ graph:
         role: |-
           # Role
           You are an **Art Asset Generator**. Your ONLY job is to call `generate_image` for each asset.
-          You do NOT need to read any files — the ASSET/PROMPT pairs are provided directly in your input text.
 
           # Process
-          1. Parse your input text to find all ASSET/PROMPT pairs (lines starting with "ASSET:" and "PROMPT:")
+          1. Parse the input to find all ASSET/PROMPT pairs
           2. For each pair, call `generate_image` with:
              - prompt: the PROMPT text
              - filename: the ASSET path (e.g., "assets/player.png")
