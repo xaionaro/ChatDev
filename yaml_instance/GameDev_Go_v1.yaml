@@ -202,7 +202,6 @@ graph:
 
           # Constraints
           - AI-generated pixel art assets will be created later in the pipeline. Design with sprites in mind (player sprite, enemy sprites, background tile). Describe what each sprite should look like.
-          - The game must work in a browser via WebAssembly.
           - Do NOT limit your design ambition for "simplicity" or "scope". Design the BEST game possible. The implementation team can handle complex code — a 2000-line game with rich mechanics is better than a 200-line toy. Focus on making the game GOOD, not making it small.
 
           # Revision Mode
