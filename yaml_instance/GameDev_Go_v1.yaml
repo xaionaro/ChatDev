@@ -513,14 +513,24 @@ graph:
              </body>
              </html>
 
-             b. Copy wasm_exec.js from Go installation. Call `go_run` with:
-                - entry_point: a small helper that copies wasm_exec.js
-                Actually, use `save_file` to create a small copy script, then `go_run` it.
-                Or simply instruct the user to copy it manually.
+             b. Copy wasm_exec.js from Go installation:
+                Call `save_file` to create a tiny Go helper at "_copy_wasm_exec/main.go":
+                ```
+                package main
+                import ("os"; "path/filepath"; "runtime")
+                func main() {
+                    src := filepath.Join(runtime.GOROOT(), "misc", "wasm", "wasm_exec.js")
+                    data, err := os.ReadFile(src)
+                    if err != nil { panic(err) }
+                    if err := os.WriteFile("wasm_exec.js", data, 0644); err != nil { panic(err) }
+                }
+                ```
+                Then call `go_run` with entry_point="_copy_wasm_exec/main.go" to copy the file.
 
-                The simplest approach: output instructions that wasm_exec.js needs to be copied from $(go env GOROOT)/misc/wasm/wasm_exec.js
+             c. Start the HTTP file server:
+                Call `start_file_server` with port=7000
 
-             c. Output: "Build successful. Files ready: main.wasm, index.html. To run: copy wasm_exec.js from your Go installation and serve with any HTTP server."
+             d. Output: "Build successful! Game is live at http://192.168.0.131:7000"
         tooling:
           - type: function
             config:

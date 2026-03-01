@@ -237,6 +237,74 @@ def go_run(
     return result
 
 
+def start_file_server(
+    *,
+    port: int = 7000,
+    _context: Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
+    """Start a background HTTP file server in the workspace directory.
+
+    Writes a minimal Go HTTP server, builds it, and starts it as a
+    background process.  Returns the URL where files are served.
+    """
+    ctx = GoWorkspaceContext(_context)
+
+    server_dir = ctx.workspace_root / "_fileserver"
+    server_dir.mkdir(exist_ok=True)
+
+    server_src = server_dir / "main.go"
+    server_src.write_text(
+        'package main\n'
+        '\n'
+        'import (\n'
+        '\t"flag"\n'
+        '\t"log"\n'
+        '\t"net/http"\n'
+        ')\n'
+        '\n'
+        'func main() {\n'
+        '\tdir := flag.String("dir", ".", "directory to serve")\n'
+        '\tport := flag.String("port", "7000", "port to listen on")\n'
+        '\tflag.Parse()\n'
+        '\tlog.Printf("Serving %s on http://0.0.0.0:%s", *dir, *port)\n'
+        '\tlog.Fatal(http.ListenAndServe(":"+*port, http.FileServer(http.Dir(*dir))))\n'
+        '}\n'
+    )
+
+    # Init module (ignore error if go.mod already exists)
+    subprocess.run(
+        ["go", "mod", "init", "fileserver"],
+        cwd=str(server_dir),
+        capture_output=True,
+    )
+
+    binary = server_dir / "server"
+    build = subprocess.run(
+        ["go", "build", "-o", str(binary), "."],
+        cwd=str(server_dir),
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    if build.returncode != 0:
+        return {
+            "error": f"failed to build file server: {build.stderr}",
+            "returncode": build.returncode,
+        }
+
+    proc = subprocess.Popen(
+        [str(binary), "-dir", str(ctx.workspace_root), "-port", str(port)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+    return {
+        "url": f"http://0.0.0.0:{port}",
+        "pid": proc.pid,
+        "workspace": str(ctx.workspace_root),
+    }
+
+
 def go_test(
     *,
     package: str = "./...",
