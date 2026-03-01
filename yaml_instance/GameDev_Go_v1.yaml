@@ -169,7 +169,7 @@ graph:
           - **Behavior**: [How it moves, what it reacts to — must be DISTINCT from other entities]
           - **Interaction**: [How does the player's core mechanic affect it? How does IT affect other entities?]
           - **Risk/Reward**: [Why would the player engage with it vs. avoid it?]
-          - **Visual**: [What it looks like, sprite description for art generation]
+          - **Visual**: [What it looks like — description for art generation]
           - **Location**: [Where does this entity live? All zones? Specific zones? Specific phases?]
 
           ## Player Journey
@@ -201,7 +201,7 @@ graph:
           [Special considerations for implementation — focus on how systems interact in code]
 
           # Constraints
-          - AI-generated pixel art assets will be created later in the pipeline. Design with sprites in mind (player sprite, enemy sprites, background tile). Describe what each sprite should look like.
+          - AI-generated art assets will be created later in the pipeline. Describe what each visual element should look like — the art style (pixel art, painterly, minimalist, geometric, etc.) is part of your creative vision.
           - Do NOT limit your design ambition for "simplicity" or "scope". Design the BEST game possible. The implementation team can handle complex code — a 2000-line game with rich mechanics is better than a 200-line toy. Focus on making the game GOOD, not making it small.
 
           # Revision Mode
@@ -276,7 +276,7 @@ graph:
           ## 4. Visual Beauty (weight: 15%)
           - Does the visual concept evoke a specific MOOD, or is it just "pick a color palette"?
           - Would a screenshot at peak action be striking enough to share?
-          - Do the visuals TRANSFORM as gameplay intensifies? (not static background + moving sprites)
+          - Do the visuals TRANSFORM as gameplay intensifies? (not static background + moving objects)
           - Does every entity look beautiful and distinctive — even the dangerous ones?
           - Is the juice catalog specific and visceral, or vague hand-waving?
           - Score 9-10: "I want this as my wallpaper." Score 7-8: Distinctive and cohesive. Score 5-6: Functional but forgettable. Below 5: Generic programmer art. **Below 7: automatic rejection.**
@@ -542,7 +542,7 @@ graph:
 
           ## Phase 1: Core Mechanics (Functional Prototype)
           Focus: **Make it fully playable with real art, humor, and the COMPLETE game world from the GDD.**
-          - Embed AI-generated pixel art sprites using `//go:embed assets/*`
+          - Embed AI-generated art assets using `//go:embed assets/*`
           - Load images via `image.Decode(bytes.NewReader(data))` + `ebiten.NewImageFromImage()`
           - Implement Ebitengine Game interface (Update, Draw, Layout)
           - Player entity with position, velocity, input handling
@@ -551,7 +551,7 @@ graph:
           - Collision detection between all interacting entity types
           - Player drive/progression system as specified in the GDD (NOT just a score counter — implement the intrinsic motivation: territory, transformation, discovery, etc.)
           - Win/loss condition logic with dramatic fail states
-          - Draw sprites via `screen.DrawImage()` with `DrawImageOptions` for positioning
+          - Draw images via `screen.DrawImage()` with `DrawImageOptions` for positioning
           - Include ALL humor text from the scenario (game-over messages, dialogue, etc.)
           - Display game state info using `text/v2`
 
@@ -633,43 +633,43 @@ graph:
         params: {protocol: chat}
         role: |-
           # Role
-          You are a **Pixel Art Director** for indie games. You create detailed image generation prompts
-          that produce clean, beautiful, game-ready pixel art sprites.
+          You are an **Art Director** for indie games. You create detailed image generation prompts
+          that produce clean, beautiful, game-ready art assets in the style specified by the GDD.
 
           # Your Task
           Based on the GDD, scenario, and technical plan, define the art assets needed for the game.
+          Choose an art style that matches the GDD's visual concept — pixel art, painterly, minimalist,
+          geometric, watercolor, vector-style, or any other style that fits the game's mood.
 
           # Asset List (create prompts for each)
-          1. **Player sprite** — the main character (64x64 px)
-          2. **Enemy/obstacle sprites** — 2-3 distinct types (48x48 px each)
-          3. **Background tile** — the game world background (128x128 px, tileable)
-          4. **Optional: UI accent** — a decorative element for score/title area (64x32 px)
+          1. **Player image** — the main character
+          2. **Enemy/obstacle images** — 2-3 distinct types
+          3. **Background image** — the game world background (tileable if appropriate)
+          4. **Optional: UI accent** — a decorative element for score/title area
 
           # Prompt Engineering Rules
           Each prompt MUST include:
-          - "pixel art" as the first words
-          - Exact dimensions (e.g., "64x64 sprite")
-          - Art style keywords: "clean lines, limited palette, retro, game-ready"
+          - Art style keywords matching the GDD's visual concept (e.g., "pixel art, retro" or "painterly, soft edges" or "geometric, flat design")
+          - Dimensions appropriate for the style
           - Color hints matching the GDD palette
-          - "white background" or "transparent background" for sprites
+          - "white background" or "transparent background" for character/object images
           - Character description from the scenario (personality visible in design)
           - NO text in the image
-          - NO photorealistic elements
 
           # Output Format (STRICT)
           For each asset, output exactly this format:
 
           ASSET: assets/player.png
-          PROMPT: pixel art [description], 64x64 sprite, clean lines, limited palette, retro style, white background, no text
+          PROMPT: [art style] [description], [dimensions], [style keywords], white background, no text
 
           ASSET: assets/enemy1.png
-          PROMPT: pixel art [description], 48x48 sprite, clean lines, limited palette, retro style, white background, no text
+          PROMPT: [art style] [description], [dimensions], [style keywords], white background, no text
 
           ASSET: assets/enemy2.png
-          PROMPT: pixel art [description], 48x48 sprite, clean lines, limited palette, retro style, white background, no text
+          PROMPT: [art style] [description], [dimensions], [style keywords], white background, no text
 
           ASSET: assets/background.png
-          PROMPT: pixel art [description], 128x128 tile, seamless, retro style, no text
+          PROMPT: [art style] [description], [dimensions], [style keywords], no text
 
           Output ONLY the ASSET/PROMPT pairs. No explanations, no commentary.
 
@@ -726,18 +726,18 @@ graph:
         params: {protocol: chat}
         role: |-
           # Role
-          You are a **Pixel Art Quality Inspector**. You evaluate generated game art assets
+          You are a **Game Art Quality Inspector**. You evaluate generated game art assets
           using the `critique_image` vision tool and decide if they meet quality standards.
 
           # Process
           1. Call `describe_available_files` to find all image files in the assets/ directory
           2. For EACH image, call `critique_image` with:
              - image_path: the asset path (e.g., "assets/player.png")
-             - criteria: "Evaluate this pixel art game sprite. Rate 1-10 on each criterion:
-               1. CLARITY: Are shapes clean and readable at small size? No muddy areas?
+             - criteria: "Evaluate this game art asset. Rate 1-10 on each criterion:
+               1. CLARITY: Are shapes clean and readable at game size? No muddy or confusing areas?
                2. AESTHETICS: Is the color palette pleasing and cohesive?
-               3. CONSISTENCY: Does the pixel art style look consistent (no mixed resolutions)?
-               4. GAME SUITABILITY: Would this work as a game sprite? Is it recognizable?
+               3. CONSISTENCY: Is the art style consistent across all assets?
+               4. GAME SUITABILITY: Would this work as a game asset? Is it recognizable?
                List specific flaws if any score is below 7."
           3. Evaluate ALL critiques
 
@@ -767,7 +767,7 @@ graph:
 
           Revision prompts (adjusted based on feedback):
           ASSET: [path]
-          PROMPT: pixel art [improved description addressing the specific flaws], ...
+          PROMPT: [art style] [improved description addressing the specific flaws], ...
 
           ART_NEEDS_REVISION
         tooling:
@@ -968,7 +968,7 @@ graph:
           - Player entity with movement and collision
           - Enemy/obstacle spawning and behavior
           - Win/loss conditions from GDD
-          - Use embedded sprite images for ALL entities (player, enemies, objects)
+          - Use embedded art assets for ALL entities (player, enemies, objects)
           - Include ALL humor text from the scenario (game-over messages, title, dialogue)
           - NO visual effects (particles, shake, etc.) in Phase 1
 
@@ -1024,13 +1024,13 @@ graph:
           2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
           3. Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
 
-          IMPORTANT: The game uses embedded pixel art sprites (//go:embed). Do NOT replace sprite rendering
-          with vector shapes. Instead, ENHANCE the sprites with:
-          - Particle effects around sprite actions (trails, explosions, sparkles)
+          IMPORTANT: The game uses embedded art assets (//go:embed). Do NOT replace image rendering
+          with vector shapes. Instead, ENHANCE the visuals with:
+          - Particle effects around actions (trails, explosions, sparkles)
           - Screen shake on impacts
-          - Smooth sprite animations (scaling, rotation, alpha blending via DrawImageOptions)
+          - Smooth animations (scaling, rotation, alpha blending via DrawImageOptions)
           - Background effects (parallax, color cycling, gradient overlays)
-          - UI polish around the existing sprite-based rendering
+          - UI polish around the existing image-based rendering
 
           VISUAL DESIGN PRINCIPLES:
 
@@ -1637,7 +1637,7 @@ graph:
       to: Game_Launcher
       trigger: true
       carry_data: false
-  initial_instruction: Describe a game idea — even a vague vibe or a weird "what if?" is enough (e.g., 'A game where your shadow is your enemy', 'Cooking but everything is alive and fighting back', 'You control gravity, not the player'). The system will twist your idea into something original, craft a rich humorous scenario, generate pixel art assets with AI, implement in Go with Ebitengine, add visual polish, perform QA, and compile to WebAssembly for browser play.
+  initial_instruction: Describe a game idea — even a vague vibe or a weird "what if?" is enough (e.g., 'A game where your shadow is your enemy', 'Cooking but everything is alive and fighting back', 'You control gravity, not the player'). The system will twist your idea into something original, craft a rich humorous scenario, generate art assets with AI, implement in Go with Ebitengine, add visual polish, perform QA, and compile to WebAssembly for browser play.
   start:
     - Game Designer
   end:
