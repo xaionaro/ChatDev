@@ -204,7 +204,7 @@ graph:
           [If the user provided any URLs (YouTube videos, images, websites) as visual references or inspiration, list them here VERBATIM — one per line. If none were provided, write "None provided."]
 
           # Constraints
-          - AI-generated art assets will be created later in the pipeline. Describe what each visual element should look like — the art style (pixel art, painterly, minimalist, geometric, etc.) is part of your creative vision.
+          - Developers build the game first with placeholder art, then AI-generated art replaces placeholders at the end of the pipeline. Describe what each visual element should look like — the art style (pixel art, painterly, minimalist, geometric, etc.) is part of your creative vision.
           - Do NOT limit your design ambition for "simplicity" or "scope". Design the BEST game possible. The implementation team can handle complex code — a 2000-line game with rich mechanics is better than a 200-line toy. Focus on making the game GOOD, not making it small.
 
           # Revision Mode
@@ -544,8 +544,10 @@ graph:
           The game should be as GOOD as possible. Do not cut corners or simplify mechanics to save code. If a feature makes the game better, include it.
 
           ## Phase 1: Core Mechanics (Functional Prototype)
-          Focus: **Make it fully playable with real art, humor, and the COMPLETE game world from the GDD.**
-          - Embed AI-generated art assets using `//go:embed assets/*`
+          Focus: **Make it fully playable with placeholder art, humor, and the COMPLETE game world from the GDD.**
+          Developers create colored placeholder PNGs for every asset and write an asset manifest.
+          Real AI art is generated AFTER the code compiles and passes QA.
+          - Create placeholder images via `create_placeholder_image` and embed using `//go:embed assets/*`
           - Load images via `image.Decode(bytes.NewReader(data))` + `ebiten.NewImageFromImage()`
           - Implement Ebitengine Game interface (Update, Draw, Layout)
           - Player entity with position, velocity, input handling
@@ -700,13 +702,17 @@ graph:
 
           # Input
           First, read the design documents:
-          1. Call `read_text_file_snippet` with path="docs/gdd.md" for the Game Design Document
-          2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
-          3. Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
+          1. Call `read_text_file_snippet` with path="docs/asset_manifest.md" for the ASSET MANIFEST (primary input — lists every asset to generate)
+          2. Call `read_text_file_snippet` with path="docs/gdd.md" for the Game Design Document (style guidance)
+          3. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario (character/world context)
           4. Call `read_text_file_snippet` with path="docs/visual_reference.md" for visual references (if available)
 
           # Your Task
-          Based on the GDD, scenario, technical plan, and visual references, define the art assets needed.
+          The developers have already built the game with placeholder art. The asset manifest
+          (`docs/asset_manifest.md`) lists EVERY asset that needs real art — with exact filenames,
+          dimensions, descriptions, and purposes. Your job is to create image generation prompts
+          that match each manifest entry exactly.
+
           If visual references exist in docs/visual_reference.md, use them as the PRIMARY guide for
           art style, color palette, and mood — they represent what the user WANTS the game to look like.
           When the GDD's visual direction conflicts with the references, the references take priority.
@@ -715,27 +721,14 @@ graph:
           geometric, watercolor, vector-style, or any other style that fits the game's mood.
 
           # Asset Planning
-          Analyze the GDD, scenario, and plan to identify EVERY visual asset the game needs.
-          Do NOT assume any genre conventions — derive the asset list ENTIRELY from what the GDD
-          and scenario describe. Not every game has enemies, health bars, or attacks. Read the
-          design carefully and create assets for what THIS game actually needs.
-
-          For each character/entity described in the GDD:
-          - Every visual state the game requires (these vary by game — could be poses, emotions,
-            phases, transformations, growth stages, or anything else the design specifies)
-          - Direction variants if the game uses directional movement
-          - Form variants if the entity changes during gameplay
-
-          For environments and scenes described in the GDD:
-          - A background for each distinct area, zone, phase, or scene — not just one
-          - Environment elements specific to each area (what the GDD describes, not generic "platforms")
-
-          For any other visual elements the GDD mentions:
-          - Collectibles, tools, effects, projectiles, UI elements — whatever the design calls for
-          - Only include what the GDD actually describes; do not invent generic game elements
-
-          The goal is to produce ENOUGH assets so developers can build the complete game
-          without placeholder art. A rich game needs rich art — 15-30+ assets is typical.
+          Use `docs/asset_manifest.md` as the DEFINITIVE list of assets to generate.
+          For each entry in the manifest, create a prompt that:
+          - Matches the exact filename from the manifest
+          - Uses the dimensions specified in the manifest
+          - Incorporates the description and purpose from the manifest
+          - Applies consistent art style across all assets
+          Read the GDD and scenario for additional context about what each entity looks like,
+          how it behaves, and what mood it should convey.
 
           # Prompt Engineering Rules
           Each prompt MUST include:
@@ -824,14 +817,20 @@ graph:
           1. Call `read_text_file_snippet` with path="docs/gdd.md" for the GDD
           2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
           3. Call `read_text_file_snippet` with path="docs/visual_reference.md" for visual references (if available)
+          4. Call `read_text_file_snippet` with path="docs/asset_manifest.md" for the ASSET MANIFEST
 
           # Process
           1. Call `describe_available_files` to find all image files in the assets/ directory
-          2. Check your input: if it comes from Art_Refiner, it lists which assets were REGENERATED
+          2. MANIFEST COMPLETENESS CHECK (MANDATORY):
+             Compare the generated assets against docs/asset_manifest.md.
+             Every filename listed in the manifest MUST have a corresponding file in assets/.
+             If ANY manifest asset is MISSING, list it in the output and emit ART_NEEDS_REVISION
+             with generation prompts for the missing assets.
+          3. Check your input: if it comes from Art_Refiner, it lists which assets were REGENERATED
              and which were UNCHANGED. Only critique the REGENERATED assets — assets that already
              passed a previous review do NOT need re-evaluation.
              On first review (input from Art_Generator), critique ALL assets.
-          3. For each asset to review, call `critique_image` with:
+          4. For each asset to review, call `critique_image` with:
              - image_path: the asset path (e.g., "assets/player.png")
              - criteria: "Evaluate this game art asset. Rate 1-10 on each criterion:
                1. CLARITY: Are shapes clean and readable at game size? No muddy or confusing areas?
@@ -843,6 +842,7 @@ graph:
           4. Evaluate critiques
 
           # Decision Logic
+          - If ANY manifest asset is MISSING from the generated files → ART_NEEDS_REVISION (include prompts for missing assets)
           - Parse each critique for scores (look for numbers after each criterion)
           - An asset PASSES if ALL scores are >= 7
           - An asset FAILS if ANY score is < 7
@@ -954,10 +954,24 @@ graph:
           4. Proper exit: The browser handles closing, but ensure no goroutine leaks.
           5. Use ALL humor beats, dialogue, and game-over messages from the scenario.
 
-          ART ASSETS:
-          AI-generated art assets are available in the assets/ directory.
-          You MUST call `describe_available_files` FIRST to see which assets exist and what format they are (PNG, JPEG, WebP, etc.).
-          Then embed each asset using Go's embed directive with the EXACT filename from the file listing.
+          ART ASSETS (PLACEHOLDER MODE):
+          Real art will be generated LATER in the pipeline. For now, create colored placeholder PNGs
+          using `create_placeholder_image` for EVERY visual asset the game needs.
+          - Call `create_placeholder_image` with filename (e.g., "assets/player.png"), width, height,
+            and a distinctive hex color for each entity type (e.g., "#00FF00" for player, "#FF0000" for enemies).
+          - Create as many assets as the game needs — different states, zones, entity variants, backgrounds.
+          - Use distinct colors per entity type so they're easy to identify during development.
+          - Placeholders compile fine with `//go:embed` — the art pipeline replaces them with real art later.
+
+          ASSET MANIFEST (MANDATORY):
+          After creating all placeholders, call `save_file` with path="docs/asset_manifest.md" containing
+          a Markdown table listing EVERY asset:
+          | Filename | Description | Width | Height | Purpose |
+          |----------|-------------|-------|--------|---------|
+          | assets/player.png | Main character idle sprite | 64 | 64 | Player entity |
+          | assets/enemy_basic.png | Basic enemy sprite | 48 | 48 | Common enemy |
+          | ... | ... | ... | ... | ... |
+          This manifest tells the art pipeline exactly what to generate.
 
           IMAGE LOADING PATTERN (MANDATORY):
           ```go
@@ -978,13 +992,13 @@ graph:
               "github.com/hajimehoshi/ebiten/v2/vector"
           )
 
-          // Embed each asset using the EXACT filename from describe_available_files.
+          // Embed each placeholder asset by filename.
           // Examples (actual filenames will vary):
           //go:embed assets/player.png
           var playerData []byte
 
-          //go:embed assets/enemy1.png
-          var enemy1Data []byte
+          //go:embed assets/entity1.png
+          var entity1Data []byte
 
           //go:embed assets/background.png
           var backgroundData []byte
@@ -1023,19 +1037,19 @@ graph:
 
           var (
               playerImage     *ebiten.Image
-              enemy1Image     *ebiten.Image
+              entity1Image    *ebiten.Image
               backgroundImage *ebiten.Image
           )
 
           func init() {
               playerImage = loadImage(playerPNG)
-              enemy1Image = loadImage(enemy1PNG)
+              entity1Image = loadImage(entity1PNG)
               backgroundImage = loadImage(backgroundPNG)
           }
 
           type Game struct {
               state int
-              // player, enemies, score, etc.
+              // entities, game state, etc.
           }
 
           func NewGame() *Game {
@@ -1075,22 +1089,24 @@ graph:
 
           ADDITIONAL REQUIREMENTS:
           - Complete game loop with ebiten.Game interface (Update, Draw, Layout)
-          - Player entity with movement and collision
-          - Enemy/obstacle spawning and behavior
+          - All entities described in the GDD with their behaviors and interactions
           - Win/loss conditions from GDD
-          - Use embedded art assets for ALL entities (player, enemies, objects)
+          - Create placeholder PNGs via `create_placeholder_image` and embed them for ALL entities
           - Include ALL humor text from the scenario (game-over messages, title, dialogue)
           - NO visual effects (particles, shake, etc.) in Phase 1
+          - Write docs/asset_manifest.md listing every asset with filename, description, dimensions, purpose
 
           PROCESS:
           1. Read the design documents:
              - Call `read_text_file_snippet` with path="docs/gdd.md" for the Game Design Document
              - Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
              - Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
-          2. Call `describe_available_files` to see which art assets exist in assets/
-          3. Call `init_go_module` with module name "game"
-          4. Call `go_get` with ["github.com/hajimehoshi/ebiten/v2@latest"]
-          5. Write the complete, runnable game code using the embedded assets.
+          2. Call `init_go_module` with module name "game"
+          3. Call `go_get` with ["github.com/hajimehoshi/ebiten/v2@latest"]
+          4. Create placeholder art for EVERY asset the game needs:
+             - Call `create_placeholder_image` for each asset (player, entities, backgrounds, objects, etc.)
+             - Use distinct colors per entity type, appropriate dimensions for each asset
+          5. Write the complete, runnable game code using the placeholder assets.
              You may split the code into multiple files if the game is complex enough to warrant it
              (e.g., main.go, entities.go, systems.go, particles.go — all in package main).
           6. Call `save_file` for each Go source file (e.g., path="main.go", path="entities.go", etc.)
@@ -1098,7 +1114,8 @@ graph:
              CRITICAL: The 'content' parameter MUST contain the full code for each file.
              DO NOT call save_file with empty arguments.
 
-          7. Output: "Phase 1 complete." followed by the list of saved files.
+          7. Call `save_file` with path="docs/asset_manifest.md" listing every placeholder asset created.
+          8. Output: "Phase 1 complete." followed by the list of saved files.
 
           IMPORTANT OUTPUT RULES:
           - You MUST generate the complete Go code internally
@@ -1115,6 +1132,7 @@ graph:
                 - name: save_file
                 - name: describe_available_files
                 - name: read_text_file_snippet
+                - name: create_placeholder_image
     - id: Polish_Developer
       type: agent
       context_window: 6
@@ -1134,8 +1152,8 @@ graph:
           2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
           3. Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
 
-          IMPORTANT: The game uses embedded art assets (//go:embed). Do NOT replace image rendering
-          with vector shapes. Instead, ENHANCE the visuals with:
+          IMPORTANT: The game currently uses PLACEHOLDER art (solid-color PNGs). Real art will be
+          generated later. Do NOT replace image rendering with vector shapes. Instead, ENHANCE the visuals with:
           - Particle effects around actions (trails, explosions, sparkles)
           - Screen shake on impacts
           - Smooth animations (scaling, rotation, alpha blending via DrawImageOptions)
@@ -1340,7 +1358,9 @@ graph:
         api_key: ${API_KEY}
         params: {protocol: chat}
         role: |-
-          You are a **Build Engineer** responsible for compiling Go games to WebAssembly and preparing them for browser execution.
+          You are a **Build Engineer** responsible for compiling Go games to WebAssembly.
+          This is an intermediate build step to verify the code compiles. The final build
+          (with real art, file server, and archive) happens later in the Final_Build node.
 
           PROCESS:
           1. First, ensure go.mod exists. Call `describe_available_files` to check.
@@ -1363,47 +1383,7 @@ graph:
              This will route the error to the Bug Fixer.
 
           4. If build SUCCEEDS:
-             a. Generate index.html for WASM loading. Call `save_file` with path="index.html" and the following content:
-
-             <!DOCTYPE html>
-             <html>
-             <head>
-               <meta charset="utf-8">
-               <title>Game</title>
-               <style>
-                 body { margin: 0; background: #111; display: flex; justify-content: center; align-items: center; height: 100vh; }
-                 canvas { image-rendering: pixelated; }
-               </style>
-             </head>
-             <body>
-               <script src="wasm_exec.js"></script>
-               <script>
-                 const go = new Go();
-                 WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
-                   go.run(result.instance);
-                 });
-               </script>
-             </body>
-             </html>
-
-             b. Copy wasm_exec.js from Go installation:
-                Call `save_file` to create a tiny Go helper at "_copy_wasm_exec/main.go":
-                ```
-                package main
-                import ("os"; "path/filepath"; "runtime")
-                func main() {
-                    src := filepath.Join(runtime.GOROOT(), "misc", "wasm", "wasm_exec.js")
-                    data, err := os.ReadFile(src)
-                    if err != nil { panic(err) }
-                    if err := os.WriteFile("wasm_exec.js", data, 0644); err != nil { panic(err) }
-                }
-                ```
-                Then call `go_run` with entry_point="_copy_wasm_exec/main.go" to copy the file.
-
-             c. Start the HTTP file server:
-                Call `start_file_server` with port=7000
-
-             d. Output: "Build successful! Game is live at http://192.168.0.131:7000"
+             Output: "Build successful! WASM binary compiled. Proceeding to art pipeline."
         tooling:
           - type: function
             config:
@@ -1629,6 +1609,93 @@ graph:
                 - name: read_text_file_snippet
                 - name: save_file
                 - name: describe_available_files
+    - id: Final_Build
+      type: agent
+      context_window: 0
+      config:
+        provider: openai
+        name: claude
+        base_url: ${BASE_URL}
+        api_key: ${API_KEY}
+        params: {protocol: chat}
+        role: |-
+          You are a **Final Build Engineer**. The game code and real art assets are ready.
+          Your job is to rebuild the WASM binary with real art embedded, create a project archive,
+          and start the file server.
+
+          PROCESS:
+          1. Ensure go.mod exists. Call `describe_available_files` to check.
+             - If go.mod is missing, call `init_go_module` with module name "game"
+             - Call `go_get` with ["github.com/hajimehoshi/ebiten/v2@latest"]
+
+          2. Build the WASM binary with real art:
+             Call `go_build` with:
+             - entry_point: "."
+             - output: "main.wasm"
+             - env: {"GOOS": "js", "GOARCH": "wasm"}
+             - timeout_seconds: 120
+
+          3. If build FAILS:
+             Output the error. This should not happen since the code already compiled
+             with placeholder art, but report the error if it does.
+
+          4. If build SUCCEEDS:
+             a. Generate index.html for WASM loading. Call `save_file` with path="index.html" and:
+
+             <!DOCTYPE html>
+             <html>
+             <head>
+               <meta charset="utf-8">
+               <title>Game</title>
+               <style>
+                 body { margin: 0; background: #111; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                 canvas { image-rendering: pixelated; }
+               </style>
+             </head>
+             <body>
+               <script src="wasm_exec.js"></script>
+               <script>
+                 const go = new Go();
+                 WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
+                   go.run(result.instance);
+                 });
+               </script>
+             </body>
+             </html>
+
+             b. Copy wasm_exec.js from Go installation:
+                Call `save_file` to create a tiny Go helper at "_copy_wasm_exec/main.go":
+                ```
+                package main
+                import ("os"; "path/filepath"; "runtime")
+                func main() {
+                    src := filepath.Join(runtime.GOROOT(), "misc", "wasm", "wasm_exec.js")
+                    data, err := os.ReadFile(src)
+                    if err != nil { panic(err) }
+                    if err := os.WriteFile("wasm_exec.js", data, 0644); err != nil { panic(err) }
+                }
+                ```
+                Then call `go_run` with entry_point="_copy_wasm_exec/main.go" to copy the file.
+
+             c. Create the project archive:
+                Call `create_project_archive` with output_filename="game_project.tar.gz"
+                This archives all project files (source code, assets, WASM, HTML, docs).
+
+             d. Start the HTTP file server:
+                Call `start_file_server` with port=7000
+
+             e. Output:
+                "Final build complete! Game is live at http://192.168.0.131:7000"
+                "Project archive: game_project.tar.gz (download at http://192.168.0.131:7000/game_project.tar.gz)"
+        tooling:
+          - type: function
+            config:
+              auto_load: true
+              tools:
+                - name: go_related:All
+                - name: save_file
+                - name: describe_available_files
+                - name: create_project_archive
   edges:
     # === Design Critique Loop ===
     - from: Game Designer
@@ -1672,44 +1739,11 @@ graph:
           any:
             - SCENARIO_APPROVED
       carry_data: false
-    # === Art Pipeline ===
+    # === Development Pipeline (placeholder art) ===
     - from: Planner
-      to: Reference_Gatherer
-      trigger: true
-      carry_data: false
-    - from: Reference_Gatherer
-      to: Art_Director
-      trigger: true
-      carry_data: false
-    - from: Art_Director
-      to: Art_Generator
-      trigger: true
-      carry_data: true
-    - from: Art_Generator
-      to: Art_Critic
-      trigger: true
-      carry_data: true
-    - from: Art_Critic
-      to: Art_Refiner
-      condition:
-        type: keyword
-        config:
-          any:
-            - ART_NEEDS_REVISION
-      carry_data: true
-    - from: Art_Critic
       to: Core_Developer
-      condition:
-        type: keyword
-        config:
-          any:
-            - ART_APPROVED
-      carry_data: false
-    - from: Art_Refiner
-      to: Art_Critic
       trigger: true
-      carry_data: true
-    # === Development Pipeline ===
+      carry_data: false
     - from: Core_Developer
       to: Polish_Developer
       trigger: true
@@ -1750,10 +1784,48 @@ graph:
       to: Game_Launcher
       trigger: true
       carry_data: false
-  initial_instruction: Describe a game idea — even a vague vibe or a weird "what if?" is enough (e.g., 'A game where your shadow is your enemy', 'Cooking but everything is alive and fighting back', 'You control gravity, not the player'). The system will twist your idea into something original, craft a rich humorous scenario, generate art assets with AI, implement in Go with Ebitengine, add visual polish, perform QA, and compile to WebAssembly for browser play.
+    # === Art Pipeline (runs after successful WASM build) ===
+    - from: WASM_Builder
+      to: Reference_Gatherer
+      condition: code_pass
+      carry_data: false
+    - from: Reference_Gatherer
+      to: Art_Director
+      trigger: true
+      carry_data: false
+    - from: Art_Director
+      to: Art_Generator
+      trigger: true
+      carry_data: true
+    - from: Art_Generator
+      to: Art_Critic
+      trigger: true
+      carry_data: true
+    - from: Art_Critic
+      to: Art_Refiner
+      condition:
+        type: keyword
+        config:
+          any:
+            - ART_NEEDS_REVISION
+      carry_data: true
+    - from: Art_Refiner
+      to: Art_Critic
+      trigger: true
+      carry_data: true
+    # === Final Build (real art → rebuild WASM → archive → serve) ===
+    - from: Art_Critic
+      to: Final_Build
+      condition:
+        type: keyword
+        config:
+          any:
+            - ART_APPROVED
+      carry_data: false
+  initial_instruction: Describe a game idea — even a vague vibe or a weird "what if?" is enough (e.g., 'A game where your shadow is your enemy', 'Cooking but everything is alive and fighting back', 'You control gravity, not the player'). The system will twist your idea into something original, craft a rich humorous scenario, implement in Go with Ebitengine using placeholder art, add visual polish, perform QA, compile to WebAssembly, then generate real AI art assets and deliver the final build for browser play.
   start:
     - Game Designer
   end:
-    - WASM_Builder
+    - Final_Build
 version: 1.0.0
 vars: {}

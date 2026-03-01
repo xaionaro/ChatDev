@@ -6,10 +6,13 @@ import logging
 import os
 import re
 import shutil
+import struct
 import subprocess
+import tarfile
 import urllib.request
+import zlib
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -234,3 +237,95 @@ def download_image(
     logger.info("download_image: saved %d bytes", size)
 
     return {"path": filename, "absolute_path": str(target), "size": size}
+
+
+def create_placeholder_image(
+    filename: str,
+    *,
+    width: int = 64,
+    height: int = 64,
+    color: str = "#FF00FF",
+    _context: Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
+    """Create a solid-color PNG placeholder image using only struct/zlib (no PIL).
+
+    Developers use these as compile-time placeholders for //go:embed.
+    The art pipeline replaces them with real generated art later.
+    """
+    ctx = _RefMediaContext(_context)
+    target = ctx.workspace_root / filename
+    target.parent.mkdir(parents=True, exist_ok=True)
+
+    # Parse hex color
+    c = color.lstrip("#")
+    if len(c) == 3:
+        c = "".join(ch * 2 for ch in c)
+    r, g, b = int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16)
+
+    # Build minimal PNG: IHDR + single IDAT + IEND
+    def _png_chunk(chunk_type: bytes, data: bytes) -> bytes:
+        chunk = chunk_type + data
+        return struct.pack(">I", len(data)) + chunk + struct.pack(">I", zlib.crc32(chunk) & 0xFFFFFFFF)
+
+    ihdr_data = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)  # 8-bit RGB
+    row = b"\x00" + bytes([r, g, b]) * width  # filter byte + pixel data
+    raw = b"".join(row for _ in range(height))
+    idat_data = zlib.compress(raw)
+
+    png = b"\x89PNG\r\n\x1a\n"
+    png += _png_chunk(b"IHDR", ihdr_data)
+    png += _png_chunk(b"IDAT", idat_data)
+    png += _png_chunk(b"IEND", b"")
+
+    target.write_bytes(png)
+    size = target.stat().st_size
+    logger.info("create_placeholder_image: %s %dx%d color=%s (%d bytes)", filename, width, height, color, size)
+
+    return {"path": filename, "absolute_path": str(target), "size": size, "width": width, "height": height, "color": color}
+
+
+def create_project_archive(
+    *,
+    output_filename: str = "game_project.tar.gz",
+    include_patterns: List[str] | None = None,
+    _context: Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
+    """Create a .tar.gz archive of the project (source, assets, WASM, HTML).
+
+    Collects files matching the include patterns from the workspace root
+    and bundles them into a compressed archive for download.
+    """
+    ctx = _RefMediaContext(_context)
+
+    target = ctx.workspace_root / output_filename
+
+    if include_patterns is None:
+        # Include all project files by default
+        matched_files = [
+            f for f in ctx.workspace_root.rglob("*")
+            if f.is_file() and f != target
+        ]
+    else:
+        matched_files = []
+        for pattern in include_patterns:
+            matched_files.extend(ctx.workspace_root.glob(pattern))
+
+    # Deduplicate and sort, skip directories
+    matched_files = sorted({f for f in matched_files if f.is_file()})
+
+    logger.info("create_project_archive: %d files matching %s", len(matched_files), include_patterns)
+
+    with tarfile.open(target, "w:gz") as tar:
+        for f in matched_files:
+            arcname = str(f.relative_to(ctx.workspace_root))
+            tar.add(str(f), arcname=arcname)
+
+    size = target.stat().st_size
+    logger.info("create_project_archive: %s (%d bytes, %d files)", target, size, len(matched_files))
+
+    return {
+        "path": output_filename,
+        "absolute_path": str(target),
+        "size": size,
+        "file_count": len(matched_files),
+    }
