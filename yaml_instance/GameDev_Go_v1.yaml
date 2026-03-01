@@ -747,7 +747,11 @@ graph:
 
           # Process
           1. Call `describe_available_files` to find all image files in the assets/ directory
-          2. For EACH image, call `critique_image` with:
+          2. Check your input: if it comes from Art_Refiner, it lists which assets were REGENERATED
+             and which were UNCHANGED. Only critique the REGENERATED assets — assets that already
+             passed a previous review do NOT need re-evaluation.
+             On first review (input from Art_Generator), critique ALL assets.
+          3. For each asset to review, call `critique_image` with:
              - image_path: the asset path (e.g., "assets/player.png")
              - criteria: "Evaluate this game art asset. Rate 1-10 on each criterion:
                1. CLARITY: Are shapes clean and readable at game size? No muddy or confusing areas?
@@ -755,12 +759,13 @@ graph:
                3. CONSISTENCY: Is the art style consistent across all assets?
                4. GAME SUITABILITY: Would this work as a game asset? Is it recognizable?
                List specific flaws if any score is below 7."
-          3. Evaluate ALL critiques
+          4. Evaluate critiques
 
           # Decision Logic
           - Parse each critique for scores (look for numbers after each criterion)
           - An asset PASSES if ALL scores are >= 7
           - An asset FAILS if ANY score is < 7
+          - Previously approved assets (unchanged from Art_Refiner) are automatically PASS
 
           # Output Format
 
