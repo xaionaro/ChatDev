@@ -140,6 +140,16 @@ graph:
           - Keep the scope achievable for a single-file Go implementation (~400-800 lines). Each system should be ~50-100 lines of simple rules. The DEPTH comes from interactions, not code volume.
           - The game must work in a browser via WebAssembly.
           - Each individual system must be SIMPLE to implement (a few rules, a few variables). The richness comes from how systems INTERACT and create emergent situations the designer didn't explicitly program. Think cellular automata: simple rules → complex behavior.
+
+          # Revision Mode
+          If you receive feedback from a human reviewer, treat it as direction to REVISE your design. Read their feedback carefully, address every point, and output a complete revised GDD. Don't just patch — rethink the design in light of their feedback while keeping what worked.
+    - id: Design_Review
+      type: human
+      config:
+        description: |-
+          Review the Game Design above. You can:
+          - Type APPROVE to proceed with this design
+          - Type your feedback to send the design back for revision (e.g., "make it more strategic", "I want a different core mechanic", "add more enemy variety")
     - id: Scenario_Builder
       type: agent
       context_window: 0
@@ -1211,11 +1221,36 @@ graph:
                 - name: read_text_file_snippet
                 - name: save_file
   edges:
-    # === Scenario Builder Loop ===
+    # === Design Review (Human-in-the-loop) ===
     - from: Game Designer
-      to: Scenario_Builder
+      to: Design_Review
       trigger: true
       carry_data: true
+    - from: Design_Review
+      to: Game Designer
+      trigger: true
+      condition:
+        type: keyword
+        config:
+          any: []
+          none:
+            - APPROVE
+          regex: []
+          case_sensitive: false
+      carry_data: true
+    - from: Design_Review
+      to: Scenario_Builder
+      trigger: false
+      condition:
+        type: keyword
+        config:
+          any:
+            - APPROVE
+          none: []
+          regex: []
+          case_sensitive: false
+      carry_data: true
+    # === Scenario Builder Loop ===
     - from: Scenario_Builder
       to: Scenario_Critic
       trigger: true
