@@ -207,6 +207,20 @@ graph:
 
           # Revision Mode
           If you receive feedback from a critic or human reviewer, treat it as direction to REVISE your design. Read their feedback carefully, address every point, and output a complete revised GDD. Don't just patch — rethink the design in light of their feedback while keeping what worked.
+
+          # File Output
+          After writing the complete GDD, you MUST call `save_file` with:
+          - path: "docs/gdd.md"
+          - content: the COMPLETE Game Design Document text
+
+          This file will be read by all downstream agents (scenario writers, planners, developers).
+          Always save the file, even when revising — overwrite with the latest version.
+      tooling:
+        - type: function
+          config:
+            auto_load: true
+            tools:
+              - name: save_file
     - id: Design_Critic
       type: agent
       context_window: 0
@@ -412,6 +426,22 @@ graph:
           - If all entities are just "obstacles", the world isn't alive enough.
           - If the player's only motivation is "don't die" or "number goes up", you haven't given them a reason to care.
 
+          # Input
+          First, call `read_text_file_snippet` with path="docs/gdd.md" to load the Game Design Document.
+
+          # File Output
+          After writing the complete scenario, you MUST call `save_file` with:
+          - path: "docs/scenario.md"
+          - content: the COMPLETE scenario document
+
+          Always save the file, even when revising — overwrite with the latest version.
+      tooling:
+        - type: function
+          config:
+            auto_load: true
+            tools:
+              - name: save_file
+              - name: read_text_file_snippet
     - id: Scenario_Critic
       type: agent
       context_window: 0
@@ -513,7 +543,7 @@ graph:
 
           ## Phase 1: Core Mechanics (Functional Prototype)
           Focus: **Make it fully playable with real art, humor, and the COMPLETE game world from the GDD.**
-          - Embed AI-generated pixel art sprites using `//go:embed assets/*.png`
+          - Embed AI-generated pixel art sprites using `//go:embed assets/*`
           - Load images via `image.Decode(bytes.NewReader(data))` + `ebiten.NewImageFromImage()`
           - Implement Ebitengine Game interface (Update, Draw, Layout)
           - Player entity with position, velocity, input handling
@@ -574,6 +604,25 @@ graph:
           5. Visual Arc: Implement visual transformation over time — environment changes, color shifts, accumulating effects that make the game look different as intensity rises.
           6. Animation & Polish: Smooth movements via lerp/easing, anticipation, follow-through, entity glow/shadow.
           7. UI Atmosphere: Immersive title screen, dramatic game-over, beautiful HUD that fits the visual world.
+
+          # Input
+          First, read the source documents:
+          1. Call `read_text_file_snippet` with path="docs/gdd.md" to load the GDD
+          2. Call `read_text_file_snippet` with path="docs/scenario.md" to load the scenario
+
+          # File Output
+          After writing the complete plan, you MUST call `save_file` with:
+          - path: "docs/plan.md"
+          - content: the COMPLETE implementation plan
+
+          Always save the file, even when revising — overwrite with the latest version.
+      tooling:
+        - type: function
+          config:
+            auto_load: true
+            tools:
+              - name: save_file
+              - name: read_text_file_snippet
     - id: Art_Director
       type: agent
       context_window: 0
@@ -682,7 +731,7 @@ graph:
           using the `critique_image` vision tool and decide if they meet quality standards.
 
           # Process
-          1. Call `describe_available_files` to find all PNG files in the assets/ directory
+          1. Call `describe_available_files` to find all image files in the assets/ directory
           2. For EACH image, call `critique_image` with:
              - image_path: the asset path (e.g., "assets/player.png")
              - criteria: "Evaluate this pixel art game sprite. Rate 1-10 on each criterion:
@@ -797,8 +846,9 @@ graph:
           5. Use ALL humor beats, dialogue, and game-over messages from the scenario.
 
           ART ASSETS:
-          AI-generated pixel art sprites are available in the assets/ directory.
-          You MUST use them via Go's embed directive. First call `describe_available_files` to see which assets exist.
+          AI-generated art assets are available in the assets/ directory.
+          You MUST call `describe_available_files` FIRST to see which assets exist and what format they are (PNG, JPEG, WebP, etc.).
+          Then embed each asset using Go's embed directive with the EXACT filename from the file listing.
 
           IMAGE LOADING PATTERN (MANDATORY):
           ```go
@@ -809,6 +859,7 @@ graph:
               _ "embed"
               "image"
               _ "image/png"
+              _ "image/jpeg"
               "image/color"
               "log"
               "math/rand"
@@ -818,14 +869,16 @@ graph:
               "github.com/hajimehoshi/ebiten/v2/vector"
           )
 
+          // Embed each asset using the EXACT filename from describe_available_files.
+          // Examples (actual filenames will vary):
           //go:embed assets/player.png
-          var playerPNG []byte
+          var playerData []byte
 
           //go:embed assets/enemy1.png
-          var enemy1PNG []byte
+          var enemy1Data []byte
 
           //go:embed assets/background.png
-          var backgroundPNG []byte
+          var backgroundData []byte
 
           // Load images in init or NewGame:
           func loadImage(data []byte) *ebiten.Image {
@@ -921,20 +974,26 @@ graph:
           - NO visual effects (particles, shake, etc.) in Phase 1
 
           PROCESS:
-          1. Call `describe_available_files` to see which art assets exist in assets/
-          2. Call `init_go_module` with module name "game"
-          3. Call `go_get` with ["github.com/hajimehoshi/ebiten/v2@latest"]
-          4. Write the complete, runnable game code using the embedded assets
-          5. Call `save_file` with path="main.go" and content=<COMPLETE GO CODE>
+          1. Read the design documents:
+             - Call `read_text_file_snippet` with path="docs/gdd.md" for the Game Design Document
+             - Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
+             - Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
+          2. Call `describe_available_files` to see which art assets exist in assets/
+          3. Call `init_go_module` with module name "game"
+          4. Call `go_get` with ["github.com/hajimehoshi/ebiten/v2@latest"]
+          5. Write the complete, runnable game code using the embedded assets.
+             You may split the code into multiple files if the game is complex enough to warrant it
+             (e.g., main.go, entities.go, systems.go, particles.go — all in package main).
+          6. Call `save_file` for each Go source file (e.g., path="main.go", path="entities.go", etc.)
 
-             CRITICAL: The 'content' parameter MUST contain the full game code.
+             CRITICAL: The 'content' parameter MUST contain the full code for each file.
              DO NOT call save_file with empty arguments.
 
-          5. Output exactly: "Phase 1 complete. Code saved to main.go."
+          7. Output: "Phase 1 complete." followed by the list of saved files.
 
           IMPORTANT OUTPUT RULES:
           - You MUST generate the complete Go code internally
-          - Pass this code as a STRING to save_file's 'content' parameter in the tool call
+          - Pass code as a STRING to save_file's 'content' parameter in the tool call
           - DO NOT paste the code in your chat message text (to save tokens and avoid duplication)
           - The code should ONLY appear inside the tool call's 'content' argument, NOT in your message
           - DO NOT add explanations after calling save_file
@@ -946,6 +1005,7 @@ graph:
                 - name: go_related:All
                 - name: save_file
                 - name: describe_available_files
+                - name: read_text_file_snippet
     - id: Polish_Developer
       type: agent
       context_window: 6
@@ -958,6 +1018,12 @@ graph:
         role: |-
           You are a PROFESSIONAL GAME ARTIST specializing in indie game visual design with Go and Ebitengine.
           Transform the Phase 1 game into a visually stunning experience.
+
+          DESIGN DOCUMENTS:
+          Before starting, read the design documents for context:
+          1. Call `read_text_file_snippet` with path="docs/gdd.md" for the Game Design Document
+          2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
+          3. Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
 
           IMPORTANT: The game uses embedded pixel art sprites (//go:embed). Do NOT replace sprite rendering
           with vector shapes. Instead, ENHANCE the sprites with:
@@ -1075,32 +1141,33 @@ graph:
           4. Proper error handling
 
           PROCESS:
-          1. Call `read_text_file_snippet(path="main.go", offset=0, limit=25000)` to read the code
-             - If truncated=true, call again with offset=25000 to get the rest
-             - Store the COMPLETE code in memory
+          1. Call `describe_available_files` to see ALL existing source files
+          2. Read every .go file using `read_text_file_snippet` (offset=0, limit=25000 each)
+             - If truncated=true, read more with increasing offset until complete
+             - Store ALL code in memory — do not miss any file
 
-          2. Plan the visual enhancements:
+          3. Plan the visual enhancements:
              - Identify which color palette to use based on game theme
              - Decide which particle effects to add (subtle, not overwhelming)
              - Plan animation improvements (smooth, not bouncy)
 
-          3. Construct the complete enhanced code:
+          4. Construct the complete enhanced code:
              - Apply the color palette throughout
              - Add particle system structs and logic
              - Add screen shake and animation code
              - Preserve ALL game logic (do not break functionality)
+             - You may add new files (e.g., particles.go, effects.go) if it improves organization
 
-          4. Call `save_file` with path="main.go" and content=<COMPLETE GO CODE>
+          5. Call `save_file` for each modified or new Go source file
 
-             CRITICAL: The 'content' parameter MUST be the full Go code string.
+             CRITICAL: The 'content' parameter MUST be the full code for each file.
              DO NOT call save_file with empty arguments.
-             DO NOT call save_file multiple times.
 
-          5. After successful save, output exactly: "Phase 2 complete. Code saved to main.go."
+          6. Output: "Phase 2 complete." followed by the list of files saved.
 
           IMPORTANT OUTPUT RULES:
           - You MUST generate the complete enhanced Go code internally
-          - Pass this code as a STRING to save_file's 'content' parameter in the tool call
+          - Pass code as a STRING to save_file's 'content' parameter in the tool call
           - DO NOT paste the code in your chat message text
           - The code should ONLY appear inside the tool call's 'content' argument
           - DO NOT add explanations after calling save_file
@@ -1122,36 +1189,38 @@ graph:
         api_key: ${API_KEY}
         params: {protocol: chat}
         role: |-
-          TASK: Read the complete main.go file and output it as a Go code block.
+          TASK: Read ALL Go source files and output them as Go code blocks.
 
-          CRITICAL: The file may be large. You MUST read it completely.
+          CRITICAL: Files may be large. You MUST read each one completely.
 
           STEPS:
-          1. Call read_text_file_snippet(path="main.go", offset=0, limit=25000)
-          2. Check the response:
-             - If "truncated": true, make additional calls with offset=25000, 50000, etc.
+          1. Call `describe_available_files` to find all .go source files
+          2. For each .go file, call `read_text_file_snippet(path=<file>, offset=0, limit=25000)`
+             - If "truncated": true, make additional calls with increasing offset
              - If "truncated": false, you have the complete file
-          3. Combine all parts if multiple calls were needed
+          3. Combine all parts if multiple calls were needed for a single file
           4. Verify completeness: check that code ends with proper structure (not cut off mid-line)
 
           OUTPUT FORMAT (STRICT):
+          For each file, output:
+          === <filename> ===
           ```go
           [PASTE EVERY LINE OF THE COMPLETE CODE HERE]
           ```
 
           ABSOLUTE RULES:
-          - NO text before ```go
-          - NO text after closing ```
+          - Output ALL .go files, not just main.go
           - NO "..." or "code omitted" placeholders
-          - NO summaries or explanations
-          - Output MUST be the complete, unmodified main.go content
-          - If file is incomplete, read more until you have it all
+          - NO summaries or explanations between files
+          - Output MUST be the complete, unmodified content of each file
+          - If a file is incomplete, read more until you have it all
         tooling:
           - type: function
             config:
               auto_load: true
               tools:
                 - name: read_text_file_snippet
+                - name: describe_available_files
     - id: WASM_Builder
       type: agent
       context_window: 0
@@ -1247,37 +1316,41 @@ graph:
         role: |-
           You are a Bug Fixer for Go/Ebitengine games. Fix ONLY the specific compilation or runtime error without rewriting the entire file.
 
+          DESIGN DOCUMENTS:
+          Read the design documents for context on intended behavior:
+          1. Call `read_text_file_snippet` with path="docs/gdd.md" for the Game Design Document
+          2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
+          3. Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
+
           CRITICAL FILE SAFETY RULES:
-          1. The main.go file may be large and MUST be read completely
-          2. Use read_text_file_snippet(path="main.go", offset=0, limit=25000)
-          3. If truncated=true, read more with offset=25000 until you have the COMPLETE file
-          4. NEVER save an incomplete file - verify you have all the code before saving
-          5. Fix ONLY the error line(s) - keep everything else EXACTLY as is
+          1. ALL source files MUST be read completely before making changes
+          2. Call `describe_available_files` to find all .go source files
+          3. Read each file with read_text_file_snippet(path=<file>, offset=0, limit=25000)
+          4. If truncated=true, read more with increasing offset until complete
+          5. NEVER save an incomplete file - verify you have all the code before saving
+          6. Fix ONLY the error line(s) - keep everything else EXACTLY as is
 
           PROCESS:
           1. Read the error output from input (identifies the error type and location)
 
-          2. Read the COMPLETE main.go file:
-             - Call `read_text_file_snippet(path="main.go", offset=0, limit=25000)`
-             - If truncated=true, call again with offset=25000 to get the rest
-             - Store the COMPLETE code in memory
+          2. Call `describe_available_files` to list all source files, then read every .go file completely
 
           3. Verify file completeness:
              - Check that code doesn't end mid-line or mid-function
-             - Verify main() function exists
+             - Verify main() function exists in one of the files
              - If incomplete, read more until complete
 
-          4. Identify the EXACT line(s) causing the error and fix them:
+          4. Identify the EXACT file and line(s) causing the error and fix them:
              - Make ONLY minimal changes to fix the specific error
              - Keep all other code EXACTLY as is
 
-          5. Call `save_file` with path="main.go" and content=<COMPLETE FIXED CODE>
+          5. Call `save_file` for the fixed file(s) only
 
-             CRITICAL: The 'content' parameter MUST be the complete fixed code.
+             CRITICAL: The 'content' parameter MUST be the complete fixed code for each file.
              DO NOT call save_file with empty arguments.
              DO NOT save incomplete code.
 
-          6. Output: "Bug fixed: [one-line description]. Code saved to main.go."
+          6. Output: "Bug fixed: [one-line description]." followed by the list of files modified.
 
           COMMON GO/EBITENGINE FIXES (minimal changes only):
           - Import errors: Add missing import or remove unused import
@@ -1294,7 +1367,7 @@ graph:
 
           IMPORTANT OUTPUT RULES:
           - You MUST generate the complete fixed Go code internally
-          - Pass this code as a STRING to save_file's 'content' parameter
+          - Pass code as a STRING to save_file's 'content' parameter
           - DO NOT paste the code in your chat message text
           - Only output a brief fix description in your message, NO code blocks
         tooling:
@@ -1304,6 +1377,7 @@ graph:
               tools:
                 - name: read_text_file_snippet
                 - name: save_file
+                - name: describe_available_files
     - id: QA_Agent
       type: agent
       context_window: 6
@@ -1317,10 +1391,16 @@ graph:
           You are a GAME QUALITY ASSURANCE SPECIALIST for Go/Ebitengine games.
           Perform final comprehensive review of the game code before building.
 
+          DESIGN DOCUMENTS:
+          Read the design documents to understand what the game should do:
+          1. Call `read_text_file_snippet` with path="docs/gdd.md" for the Game Design Document
+          2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
+          3. Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
+
           CRITICAL FIRST STEP:
-          1. USE `read_text_file_snippet(path="main.go", offset=0, limit=25000)` to read the game code
-          2. If truncated=true, read more with offset=25000
-          3. DO NOT ask user to upload files - the code is already in main.go
+          1. Call `describe_available_files` to find all source files
+          2. Read every .go file using `read_text_file_snippet` (offset=0, limit=25000 each)
+          3. If truncated=true, read more with increasing offset until complete
 
           REVIEW CHECKLIST:
 
@@ -1379,6 +1459,7 @@ graph:
               auto_load: true
               tools:
                 - name: read_text_file_snippet
+                - name: describe_available_files
     - id: Polish_Refinement
       type: agent
       context_window: 6
@@ -1392,13 +1473,19 @@ graph:
           You are a GAME IMPROVEMENT SPECIALIST for Go/Ebitengine games.
           Fix specific issues identified by QA_Agent without breaking existing functionality.
 
+          DESIGN DOCUMENTS:
+          Read the design documents for context on intended behavior:
+          1. Call `read_text_file_snippet` with path="docs/gdd.md" for the Game Design Document
+          2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
+          3. Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
+
           PROCESS:
           1. Read QA feedback (lists specific issues)
 
-          2. Read the COMPLETE main.go file:
-             - Call `read_text_file_snippet(path="main.go", offset=0, limit=25000)`
-             - If truncated=true, call again with offset=25000
-             - Store the complete code in memory
+          2. Call `describe_available_files` to list all source files, then read every .go file completely:
+             - Call `read_text_file_snippet` for each file (offset=0, limit=25000)
+             - If truncated=true, read more with increasing offset until complete
+             - Store all code in memory
 
           3. Fix ONLY the identified issues:
              - If color issue: adjust palette using color.RGBA
@@ -1407,16 +1494,16 @@ graph:
              - If functional issue: add missing feature
              - Verify ALL other code remains unchanged
 
-          4. Call `save_file` with path="main.go" and content=<COMPLETE REFINED CODE>
+          4. Call `save_file` for each modified file
 
-             CRITICAL: The 'content' parameter MUST be the complete code.
+             CRITICAL: The 'content' parameter MUST be the complete code for each file.
              DO NOT call save_file with empty arguments.
 
-          5. Output: "Refinement complete. Issues addressed: [list]. Code saved."
+          5. Output: "Refinement complete. Issues addressed: [list]." followed by the list of files modified.
 
           IMPORTANT OUTPUT RULES:
           - You MUST generate the complete refined Go code internally
-          - Pass this code as a STRING to save_file's 'content' parameter
+          - Pass code as a STRING to save_file's 'content' parameter
           - DO NOT paste the code in your chat message text
           - Only output a brief summary, NO code blocks
 
@@ -1432,16 +1519,13 @@ graph:
               tools:
                 - name: read_text_file_snippet
                 - name: save_file
+                - name: describe_available_files
   edges:
     # === Design Critique Loop ===
     - from: Game Designer
       to: Design_Critic
       trigger: true
       carry_data: true
-    - from: Game Designer
-      to: Scenario_Builder
-      carry_data: true
-      trigger: false
     - from: Design_Critic
       to: Game Designer
       condition:
@@ -1463,10 +1547,6 @@ graph:
       to: Scenario_Critic
       trigger: true
       carry_data: true
-    - from: Scenario_Builder
-      to: Planner
-      carry_data: true
-      trigger: false
     - from: Scenario_Critic
       to: Scenario_Builder
       condition:
@@ -1483,19 +1563,6 @@ graph:
           any:
             - SCENARIO_APPROVED
       carry_data: false
-    # === Feed Core_Developer with GDD, Scenario, and Plan (queued, not triggered) ===
-    - from: Game Designer
-      to: Core_Developer
-      carry_data: true
-      trigger: false
-    - from: Scenario_Builder
-      to: Core_Developer
-      carry_data: true
-      trigger: false
-    - from: Planner
-      to: Core_Developer
-      carry_data: true
-      trigger: false
     # === Art Pipeline ===
     - from: Planner
       to: Art_Director
@@ -1530,55 +1597,6 @@ graph:
       to: Art_Critic
       trigger: true
       carry_data: true
-    # === Feed all developers with GDD, Scenario, and Plan ===
-    - from: Game Designer
-      to: Polish_Developer
-      carry_data: true
-      trigger: false
-    - from: Game Designer
-      to: QA_Agent
-      carry_data: true
-      trigger: false
-    - from: Game Designer
-      to: Polish_Refinement
-      carry_data: true
-      trigger: false
-    - from: Game Designer
-      to: Bug_Fixer
-      carry_data: true
-      trigger: false
-    - from: Scenario_Builder
-      to: Polish_Developer
-      carry_data: true
-      trigger: false
-    - from: Scenario_Builder
-      to: QA_Agent
-      carry_data: true
-      trigger: false
-    - from: Scenario_Builder
-      to: Polish_Refinement
-      carry_data: true
-      trigger: false
-    - from: Scenario_Builder
-      to: Bug_Fixer
-      carry_data: true
-      trigger: false
-    - from: Planner
-      to: Polish_Developer
-      carry_data: true
-      trigger: false
-    - from: Planner
-      to: QA_Agent
-      carry_data: true
-      trigger: false
-    - from: Planner
-      to: Polish_Refinement
-      carry_data: true
-      trigger: false
-    - from: Planner
-      to: Bug_Fixer
-      carry_data: true
-      trigger: false
     # === Development Pipeline ===
     - from: Core_Developer
       to: Polish_Developer
