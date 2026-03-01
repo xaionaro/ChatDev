@@ -151,8 +151,10 @@ graph:
           3) all exported functions and types should have Go doc comments;
           4) no potential bugs;
           5) The entire project conforms to the tasks proposed by the user;
-          6) most importantly, do not only check the errors in the code, but also the logic of code. Make sure that user can interact with generated software without losing any feature in the requirement;
+          6) most importantly, do not only check the errors in the code, but also the logic of code. Make sure that user can interact with generated software without losing any feature in the requirement. Enumerate EVERY feature from the user's task and verify each one is implemented and works correctly;
           7) proper error handling following Go conventions (check and return errors, don't ignore them);
+          8) [AUTO-TEST COVERAGE] every `.go` source file must have a corresponding `*_test.go` with unit tests achieving >= 90% line coverage. There must also be `e2e_test.go` files (with `//go:build e2e` tag) covering >= 85% of user-facing features. Run `go_test` with `-v -cover ./...` to verify. If coverage is insufficient, this is a review comment;
+          9) [REGRESSION TESTS FOR ISSUES] every bug or issue you find during this review MUST have a corresponding auto-test that would catch it. If you find an issue and there is no test covering it, instruct the programmer to add a regression test for that specific issue in addition to fixing the code;
           You should call provided function to load the codes.
           Now, you should check the above regulations one by one and review the codes in detail, propose one comment with the highest priority about the codes, and give me instructions on how to fix. Tell me your comment with the highest priority and corresponding suggestions on revision. If the codes are perfect and you have no comment on them, return only one line like "<INFO> Finished"
         role: user
@@ -211,7 +213,17 @@ graph:
           Source Code: You should call the provided functions to load the codes.
           Unimplemented File: You should find all unimplemented functions and methods by calling provided functions and then, implement them.
           As the Programmer, to satisfy the complete function of our developed software, you have to implement all functions and methods in the unimplemented files. Now, implement all methods of the unimplemented files and all other codes needed.
-          If you find all the files are fully implemented, output "<INFO> FINISHED"
+
+          [AUTO-TEST COMPLETENESS CHECK]
+          You must also verify that auto-tests are complete:
+          1. Every `.go` source file must have a corresponding `*_test.go` file with unit tests.
+          2. There must be `e2e_test.go` files (with `//go:build e2e` tag) covering user-facing features.
+          3. If any test files are missing or incomplete, create them now.
+          4. Run `go_test` with args `-v -cover ./...` — unit test coverage must be >= 90%.
+          5. Run `go_test` with args `-v -tags e2e -cover ./...` — e2e tests must pass and cover >= 85% of features.
+          If tests are missing or coverage is below thresholds, write the missing tests before declaring finished.
+
+          If you find all files are fully implemented AND all test coverage thresholds are met, output "<INFO> FINISHED"
         role: user
       description: ''
       context_window: 0
@@ -262,6 +274,17 @@ graph:
           If the test report shows `"timed_out": True`, you must analyze the `stdout` and `stderr`:
           1. **Pass**: If the logs indicate the application started successfully (e.g., "Listening on port", "Server started", or simply running without crashing) and was eventually killed by the timeout, **DO NOT classify this as a bug**. You should consider this a successful run.
           2. **Fail**: Only classify a timeout as a bug if the program was supposed to finish quickly (like a calculation script) but hung, or if it produced no output/errors before timing out.
+
+          [THOROUGH TESTING PROTOCOL]
+          You must be extremely thorough. Do not just run the code once — systematically test EVERY feature:
+          1. Run `go_test` with args `-v -cover ./...` to execute all unit tests and check coverage. Coverage must be >= 90%.
+          2. Run `go_test` with args `-v -tags e2e ./...` to execute all e2e tests. These must cover >= 85% of user-facing features.
+          3. Run the application itself with `go_run` and test it manually if applicable (e.g., send requests to HTTP servers, test CLI commands with various arguments).
+          4. Enumerate EVERY feature from the user's task and verify each one works. List each feature and its test result (PASS/FAIL).
+          5. Test edge cases: empty inputs, invalid inputs, boundary values, concurrent usage if applicable.
+
+          [REGRESSION TEST REQUIREMENT]
+          For every bug you find, you must note that a regression test covering this specific bug is required. The programmer must add a test case that reproduces the bug before fixing it.
 
           According to the test reports, please locate and summarize the bugs that cause the problem. You should NEVER write or edit the codes. You should ONLY "locate and summarize the bugs that cause the problem".
         role: user
@@ -402,6 +425,8 @@ graph:
           Comments on Codes: Please refer to the input from Reviewer.
           Source Code: You MUST firstly call the functions to load the source codes.
           As the Programmer, to satisfy the new user's demand and make the software creative, executive and robust, you should modify corresponding codes according to the comments. Then, update the codes with all bugs fixed based on the comments. You should call the provided functions to save your modification. You should modify existing codes, rather than create your own codes.
+
+          [MANDATORY] For every bug or issue fixed, you MUST also add a regression test in the corresponding `*_test.go` file that specifically covers the fixed issue. This ensures the bug cannot recur. After fixing, run `go_test` with `-v -cover ./...` to verify unit test coverage remains >= 90%.
         role: user
       description: ''
       context_window: 0
@@ -416,6 +441,12 @@ graph:
           Error Summary of Test Reports: Please refer to the input
           You MUST modify the existing codes. If you try to implement it from scratch yourself, you'll be fired!
           As the Programmer, to satisfy the new user's demand and make the software execute smoothly and robustly, you should modify the source codes based on the error summary. If no bugs are reported, please return only one line like "<INFO> Finished".
+
+          [MANDATORY REGRESSION TESTS]
+          For EVERY bug you fix, you MUST also add a regression test in the corresponding `*_test.go` file that specifically reproduces and validates the fix. After all fixes, run `go_test` with `-v -cover ./...` to verify:
+          - All tests pass
+          - Unit test coverage >= 90%
+          Also run `go_test` with `-v -tags e2e ./...` to verify e2e tests still pass and cover >= 85% of user-facing features.
         role: user
       description: ''
       context_window: 0
@@ -430,6 +461,12 @@ graph:
           Error Summary of Test Reports: Please refer to the input
           You MUST modify the existing codes. If you try to implement it from scratch yourself, you'll be fired!
           As the Programmer, to satisfy the new user's demand and make the software execute smoothly and robustly, you should modify the source codes based on the error summary. If no bugs are reported, please return only one line like "<INFO> Finished".
+
+          [MANDATORY REGRESSION TESTS]
+          For EVERY bug you fix, you MUST also add a regression test in the corresponding `*_test.go` file that specifically reproduces and validates the fix. After all fixes, run `go_test` with `-v -cover ./...` to verify:
+          - All tests pass
+          - Unit test coverage >= 90%
+          Also run `go_test` with `-v -tags e2e ./...` to verify e2e tests still pass and cover >= 85% of user-facing features.
         role: assistant
       description: ''
       context_window: 0
@@ -464,6 +501,32 @@ graph:
 
           Please note that the code should be fully functional. Ensure to implement all functions. No placeholder implementations.
           You should call the provided functions to save your code.
+
+          [MANDATORY AUTO-TEST REQUIREMENT]
+          You MUST write automated tests alongside your implementation code. Tests are NOT optional — they are a core deliverable, just like the implementation itself. For every `.go` source file you create, you must also create the corresponding `*_test.go` file in the same package.
+
+          ## Unit Tests (required: >= 90% line coverage)
+          - Create `*_test.go` files for every `.go` file (for `main.go`, extract testable logic into separate functions or internal packages and test those).
+          - Test all exported AND unexported functions and methods.
+          - Cover normal paths, edge cases, error paths, and boundary conditions.
+          - Use table-driven tests with `t.Run()` subtests (idiomatic Go).
+          - Use `t.Helper()` in test helper functions.
+          - Mock external dependencies (network, filesystem, databases) using interfaces.
+          - Every error return path must have a test case.
+
+          ## End-to-End Tests (required: >= 85% coverage of user-facing features)
+          - Create `e2e_test.go` files with build tag `//go:build e2e` so they can be run separately.
+          - Test the application as a whole: start it, interact with it, verify outputs.
+          - For CLI apps: test command-line arguments, stdin/stdout, exit codes.
+          - For HTTP servers: use `net/http/httptest` to test endpoints end-to-end.
+          - For libraries: test the public API with realistic usage scenarios.
+          - Cover at least 85% of user-facing features described in the task.
+
+          ## Coverage Verification
+          After writing code and tests, you MUST run:
+          1. `go_test` with args `-v -cover ./...` to verify unit test coverage >= 90%.
+          2. `go_test` with args `-v -tags e2e -cover ./...` to verify e2e tests pass.
+          If coverage is below the thresholds, add more tests before finishing.
         role: user
       description: ''
       context_window: 0
@@ -485,6 +548,18 @@ graph:
           If the test report shows `"timed_out": True`, you must analyze the `stdout` and `stderr`:
           1. **Pass**: If the logs indicate the application started successfully (e.g., "Listening on port", "Server started", or simply running without crashing) and was eventually killed by the timeout, **DO NOT classify this as a bug**. You should consider this a successful run.
           2. **Fail**: Only classify a timeout as a bug if the program was supposed to finish quickly (like a calculation script) but hung, or if it produced no output/errors before timing out.
+
+          [THOROUGH QA PROTOCOL]
+          You must test EVERY SINGLE feature described in the user's task. Do not skip any feature.
+          1. First, enumerate all features from the user's task description.
+          2. For each feature, design and run specific test scenarios (happy path, edge cases, error cases).
+          3. Run `go_test` with `-v -cover ./...` and verify unit test coverage >= 90%. If below, report it as a bug.
+          4. Run `go_test` with `-v -tags e2e ./...` and verify e2e tests cover >= 85% of features. If below, report it as a bug.
+          5. Run the application with `go_run` and manually verify behavior for interactive features.
+          6. Report a per-feature test matrix: feature name, test method, result (PASS/FAIL).
+
+          [REGRESSION TEST ENFORCEMENT]
+          For every bug you discover, explicitly require that the programmer adds a regression test covering that specific bug before the fix is considered complete.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
         params: {protocol: chat}
