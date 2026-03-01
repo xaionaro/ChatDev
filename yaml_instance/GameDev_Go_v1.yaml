@@ -1532,7 +1532,88 @@ graph:
       to: Core_Developer
       carry_data: true
       trigger: false
-    # === Development Pipeline (unchanged) ===
+    # === Feed all developers with GDD, Scenario, Plan, and ArtMaterials ===
+    - from: Game Designer
+      to: Polish_Developer
+      carry_data: true
+      trigger: false
+    - from: Game Designer
+      to: QA_Agent
+      carry_data: true
+      trigger: false
+    - from: Game Designer
+      to: Polish_Refinement
+      carry_data: true
+      trigger: false
+    - from: Game Designer
+      to: Bug_Fixer
+      carry_data: true
+      trigger: false
+    - from: Scenario_Builder
+      to: Polish_Developer
+      carry_data: true
+      trigger: false
+    - from: Scenario_Builder
+      to: QA_Agent
+      carry_data: true
+      trigger: false
+    - from: Scenario_Builder
+      to: Polish_Refinement
+      carry_data: true
+      trigger: false
+    - from: Scenario_Builder
+      to: Bug_Fixer
+      carry_data: true
+      trigger: false
+    - from: Planner
+      to: Polish_Developer
+      carry_data: true
+      trigger: false
+    - from: Planner
+      to: QA_Agent
+      carry_data: true
+      trigger: false
+    - from: Planner
+      to: Polish_Refinement
+      carry_data: true
+      trigger: false
+    - from: Planner
+      to: Bug_Fixer
+      carry_data: true
+      trigger: false
+    - from: Art_Generator
+      to: Polish_Developer
+      carry_data: true
+      trigger: false
+    - from: Art_Generator
+      to: QA_Agent
+      carry_data: true
+      trigger: false
+    - from: Art_Generator
+      to: Polish_Refinement
+      carry_data: true
+      trigger: false
+    - from: Art_Generator
+      to: Bug_Fixer
+      carry_data: true
+      trigger: false
+    - from: Art_Refiner
+      to: Polish_Developer
+      carry_data: true
+      trigger: false
+    - from: Art_Refiner
+      to: QA_Agent
+      carry_data: true
+      trigger: false
+    - from: Art_Refiner
+      to: Polish_Refinement
+      carry_data: true
+      trigger: false
+    - from: Art_Refiner
+      to: Bug_Fixer
+      carry_data: true
+      trigger: false
+    # === Development Pipeline ===
     - from: Core_Developer
       to: Polish_Developer
       trigger: true
