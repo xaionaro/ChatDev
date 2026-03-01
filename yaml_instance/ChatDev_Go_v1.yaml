@@ -215,6 +215,8 @@ graph:
           Unimplemented File: You should find all unimplemented functions and methods by calling provided functions and then, implement them.
           As the Programmer, to satisfy the complete function of our developed software, you have to implement all functions and methods in the unimplemented files. Now, implement all methods of the unimplemented files and all other codes needed.
 
+          [RESPONSE SIZE LIMIT] Keep your response under 40000 tokens. If there are many unimplemented files, implement a few at a time and let the loop continue. No single file may exceed 300 lines — split large files.
+
           [PLACEHOLDER ASSET DIMENSIONS CHECK]
           Verify that all placeholder assets (images, sprites, icons, UI elements, textures, etc.) have dimensions (width and height) appropriate for what they need to visually express. Each placeholder must have dimensions tailored to its specific purpose — not arbitrary or uniform sizes. If any placeholder has inappropriate dimensions, fix it now.
 
@@ -430,6 +432,8 @@ graph:
           Source Code: You MUST firstly call the functions to load the source codes.
           As the Programmer, to satisfy the new user's demand and make the software creative, executive and robust, you should modify corresponding codes according to the comments. Then, update the codes with all bugs fixed based on the comments. You should call the provided functions to save your modification. You should modify existing codes, rather than create your own codes.
 
+          [RESPONSE SIZE LIMIT] Keep your response under 40000 tokens. If there are many fixes, address them a few at a time. No single file may exceed 300 lines — split if needed.
+
           [MANDATORY] For every bug or issue fixed, you MUST also add a regression test in the corresponding `*_test.go` file that specifically covers the fixed issue. This ensures the bug cannot recur. After fixing, run `go_test` with `-v -cover ./...` to verify unit test coverage remains >= 90%.
         role: user
       description: ''
@@ -503,13 +507,13 @@ graph:
               fmt.Println("Hello, world!")
           }
 
-          [CODE ORGANIZATION]
-          Split your code into multiple focused files — do NOT put everything into a single file. Each file should have a clear single responsibility:
-          - `main.go` — only the entry point (main function), kept minimal.
-          - Separate files for each major concern: e.g., `server.go`, `handlers.go`, `models.go`, `config.go`, `game.go`, `renderer.go`, `input.go`, etc.
-          - Group related types, functions, and methods together in the same file.
-          - Use separate packages when the project is large enough to warrant it.
-          This keeps files small, readable, and easier to test individually.
+          [CODE ORGANIZATION — CRITICAL]
+          You MUST split code into multiple small files. NO file may exceed 300 lines. Your total response must stay under 40000 tokens — if the project is large, save files one at a time across multiple turns rather than writing everything at once.
+          - `main.go` — only the entry point, kept under 50 lines.
+          - Separate files for each concern: `server.go`, `handlers.go`, `models.go`, `config.go`, `game.go`, `renderer.go`, `input.go`, `logic.go`, etc.
+          - Each file gets its own `*_test.go` — also under 300 lines. Split large test files into `foo_unit_test.go`, `foo_edge_test.go`, etc.
+          - Use separate packages when the project has 5+ files.
+          - If you realize your response is getting long, STOP, save what you have, and continue in the next turn. The Code Complete phase will catch unfinished files.
 
           Please note that the code should be fully functional. Ensure to implement all functions. No placeholder implementations.
           You should call the provided functions to save your code.
