@@ -439,7 +439,7 @@ graph:
           ## Decision
 
           [If weighted >= 7.0]
-          The scenario is rich, funny, and immersive. Proceeding to planning.
+          The scenario is rich and immersive. Proceeding to planning.
           SCENARIO_APPROVED
 
           [If weighted < 7.0]
@@ -447,6 +447,8 @@ graph:
           1. [Most critical problem with actionable fix]
           2. [Second problem with actionable fix]
           SCENARIO_NEEDS_WORK
+
+          IMPORTANT: Your last line of output must contain either "SCENARIO_APPROVED" or "SCENARIO_NEEDS_WORK" as a routing keyword. This is CRITICAL for the pipeline to continue.
 
     - id: Planner
       type: agent
@@ -1382,6 +1384,13 @@ graph:
               tools:
                 - name: read_text_file_snippet
                 - name: save_file
+    - id: Final_Review
+      type: human
+      config:
+        description: |-
+          The game has been built and compiled to WebAssembly. Play it and review:
+          - Type ACCEPT to finish — the game is ready
+          - Type your feedback to send it back for refinement (e.g., "enemies are too fast", "needs more visual effects", "the controls feel sluggish", "add more variety")
   edges:
     # === Design Critique Loop ===
     - from: Game Designer
@@ -1523,10 +1532,26 @@ graph:
       to: Game_Launcher
       trigger: true
       carry_data: false
+    # === Final User Review ===
+    - from: WASM_Builder
+      to: Final_Review
+      condition: code_success
+      carry_data: false
+    - from: Final_Review
+      to: Polish_Developer
+      condition:
+        type: keyword
+        config:
+          any: []
+          none:
+            - ACCEPT
+          regex: []
+          case_sensitive: false
+      carry_data: true
   initial_instruction: Describe a game idea — even a vague vibe or a weird "what if?" is enough (e.g., 'A game where your shadow is your enemy', 'Cooking but everything is alive and fighting back', 'You control gravity, not the player'). The system will twist your idea into something original, craft a rich humorous scenario, generate pixel art assets with AI, implement in Go with Ebitengine, add visual polish, perform QA, and compile to WebAssembly for browser play.
   start:
     - Game Designer
   end:
-    - WASM_Builder
+    - Final_Review
 version: 1.0.0
 vars: {}
