@@ -1477,6 +1477,19 @@ graph:
           any:
             - SCENARIO_APPROVED
       carry_data: false
+    # === Feed Core_Developer with GDD, Scenario, and Plan (queued, not triggered) ===
+    - from: Game Designer
+      to: Core_Developer
+      carry_data: true
+      trigger: false
+    - from: Scenario_Builder
+      to: Core_Developer
+      carry_data: true
+      trigger: false
+    - from: Planner
+      to: Core_Developer
+      carry_data: true
+      trigger: false
     # === Art Pipeline ===
     - from: Planner
       to: Art_Director
