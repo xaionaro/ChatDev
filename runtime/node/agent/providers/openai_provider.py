@@ -40,14 +40,17 @@ class OpenAIProvider(ModelProvider):
         Returns:
             OpenAI client instance with token tracking if available
         """
+        client_timeout = openai.Timeout(connect=30.0, read=3600, write=600, pool=600)
         if self.base_url:
             return OpenAI(
                 api_key=self.api_key,
                 base_url=self.base_url,
+                timeout=client_timeout,
             )
         else:
             return OpenAI(
                 api_key=self.api_key,
+                timeout=client_timeout,
             )
 
     def call_model(
