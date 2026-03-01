@@ -385,30 +385,32 @@ graph:
 
           # Evaluation Criteria (Score 1-10 each)
 
-          ## 1. Emotional Impact (weight: 30%)
+          ## 1. Originality & Creative Ambition (weight: 30%) — THE MOST IMPORTANT CRITERION
+          - Did the scenario writer ADD value beyond the GDD, or just decorate it with clichés?
+          - Is the result genuinely ORIGINAL — fresh premise, surprising characters, unexpected turns?
+          - Are the mechanical enhancements [NEW] actually novel, or just common game tropes?
+          - Is "The Turn" (mid-game revelation/shift) genuinely surprising, or predictable?
+          - Would someone share this game because the EXPERIENCE is unique?
+          - Score 8+: "I've never seen a game scenario like this." Score 5-7: Familiar with some fresh touches. Below 5: Generic or derivative.
+
+          ## 2. Emotional Impact (weight: 25%)
           - Does the scenario make you FEEL something — not just laugh, but gasp, feel tension, feel triumph, feel curious?
-          - Are the emotional beats varied (not just one note of humor throughout)?
+          - Are the emotional beats varied (not just one note throughout)?
           - Do failure and success MEAN something beyond "game over" / "you win"?
           - Do entities feel like characters with motivations, not just obstacles?
           - Score 7+: Made you genuinely feel something. Below 5: Emotionally flat.
 
-          ## 2. World Aliveness (weight: 25%)
-          - Does the world feel like it EXISTS beyond the player's actions?
-          - Is there environmental storytelling that hints at a larger world?
-          - Does the atmosphere EVOLVE during gameplay?
-          - Would a player feel like they're IN a world, not just moving pixels on a screen?
-
-          ## 3. Creative Ambition (weight: 25%)
-          - Did the scenario writer ADD value beyond the GDD, or just decorate it?
-          - Are there mechanical enhancements that make the game richer?
-          - Is "The Turn" (mid-game revelation/shift) genuinely surprising?
-          - Would someone share this game because the EXPERIENCE is unique, not just the mechanics?
-
-          ## 4. Dramatic Arc (weight: 20%)
+          ## 3. Dramatic Arc (weight: 25%)
           - Does the game build to a genuine CLIMAX?
           - Is the progression felt emotionally, not just mechanically?
           - Are there enough distinct "moments" — peaks of drama, comedy, wonder?
           - Does the ending (win or lose) feel EARNED and resonant?
+
+          ## 4. World Aliveness (weight: 20%)
+          - Does the world feel like it EXISTS beyond the player's actions?
+          - Is there environmental storytelling that hints at a larger world?
+          - Does the atmosphere EVOLVE during gameplay?
+          - Would a player feel like they're IN a world, not just moving pixels on a screen?
 
           # Decision Process
           Calculate weighted average. If >= 7.0: approve. Otherwise: send back.
@@ -419,10 +421,10 @@ graph:
 
           | Category | Score | Notes |
           |----------|-------|-------|
+          | Originality & Ambition | X/10 | [what's genuinely fresh? what's cliché?] |
           | Emotional Impact | X/10 | [specific feedback] |
-          | World Aliveness | X/10 | [specific feedback] |
-          | Creative Ambition | X/10 | [specific feedback] |
           | Dramatic Arc | X/10 | [specific feedback] |
+          | World Aliveness | X/10 | [specific feedback] |
           | **Weighted** | **X.X/10** | |
 
           ## What Hits Hard
