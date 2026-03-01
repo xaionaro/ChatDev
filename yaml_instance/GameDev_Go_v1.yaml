@@ -1432,6 +1432,10 @@ graph:
       to: Design_Critic
       trigger: true
       carry_data: true
+    - from: Game Designer
+      to: Scenario_Builder
+      carry_data: true
+      trigger: false
     - from: Design_Critic
       to: Game Designer
       condition:
@@ -1447,12 +1451,16 @@ graph:
         config:
           any:
             - DESIGN_APPROVED
-      carry_data: true
+      carry_data: false
     # === Scenario Builder Loop ===
     - from: Scenario_Builder
       to: Scenario_Critic
       trigger: true
       carry_data: true
+    - from: Scenario_Builder
+      to: Planner
+      carry_data: true
+      trigger: false
     - from: Scenario_Critic
       to: Scenario_Builder
       condition:
@@ -1468,7 +1476,7 @@ graph:
         config:
           any:
             - SCENARIO_APPROVED
-      carry_data: true
+      carry_data: false
     # === Art Pipeline ===
     - from: Planner
       to: Art_Director
@@ -1483,6 +1491,10 @@ graph:
       to: Art_Critic
       trigger: true
       carry_data: true
+    - from: Art_Generator
+      to: Core_Developer
+      carry_data: true
+      trigger: false
     - from: Art_Critic
       to: Art_Refiner
       condition:
@@ -1498,11 +1510,15 @@ graph:
         config:
           any:
             - ART_APPROVED
-      carry_data: true
+      carry_data: false
     - from: Art_Refiner
       to: Art_Critic
       trigger: true
       carry_data: true
+    - from: Art_Refiner
+      to: Core_Developer
+      carry_data: true
+      trigger: false
     # === Development Pipeline (unchanged) ===
     - from: Core_Developer
       to: Polish_Developer
