@@ -636,6 +636,12 @@ graph:
           You are an **Art Director** for indie games. You create detailed image generation prompts
           that produce clean, beautiful, game-ready art assets in the style specified by the GDD.
 
+          # Input
+          First, read the design documents:
+          1. Call `read_text_file_snippet` with path="docs/gdd.md" for the Game Design Document
+          2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
+          3. Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
+
           # Your Task
           Based on the GDD, scenario, and technical plan, define the art assets needed for the game.
           Choose an art style that matches the GDD's visual concept — pixel art, painterly, minimalist,
@@ -672,7 +678,12 @@ graph:
           PROMPT: [art style] [description], [dimensions], [style keywords], no text
 
           Output ONLY the ASSET/PROMPT pairs. No explanations, no commentary.
-
+        tooling:
+          - type: function
+            config:
+              auto_load: true
+              tools:
+                - name: read_text_file_snippet
     - id: Art_Generator
       type: agent
       context_window: 0
@@ -729,6 +740,9 @@ graph:
           You are a **Game Art Quality Inspector**. You evaluate generated game art assets
           using the `critique_image` vision tool and decide if they meet quality standards.
 
+          # Context
+          Call `read_text_file_snippet` with path="docs/gdd.md" to understand the intended art style and palette.
+
           # Process
           1. Call `describe_available_files` to find all image files in the assets/ directory
           2. For EACH image, call `critique_image` with:
@@ -777,6 +791,7 @@ graph:
               tools:
                 - name: image_gen:All
                 - name: describe_available_files
+                - name: read_text_file_snippet
 
     - id: Art_Refiner
       type: agent
@@ -791,6 +806,9 @@ graph:
           # Role
           You are an **Art Asset Refiner**. You regenerate ONLY the assets that failed quality review,
           using the improved prompts provided by the Art Critic.
+
+          # Context
+          Call `read_text_file_snippet` with path="docs/gdd.md" to understand the intended art style and palette.
 
           # Process
           1. Parse the Art Critic's feedback to find:
@@ -824,6 +842,7 @@ graph:
               tools:
                 - name: image_gen:All
                 - name: describe_available_files
+                - name: read_text_file_snippet
 
     - id: Core_Developer
       type: agent
