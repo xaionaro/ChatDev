@@ -1413,6 +1413,7 @@ graph:
           any:
             - DESIGN_APPROVED
       carry_data: true
+      keep_message: true
     # === Human Design Review ===
     - from: Design_Review
       to: Game Designer
@@ -1425,6 +1426,7 @@ graph:
           regex: []
           case_sensitive: false
       carry_data: true
+      keep_message: true
     - from: Design_Review
       to: Scenario_Builder
       condition:
@@ -1436,6 +1438,7 @@ graph:
           regex: []
           case_sensitive: false
       carry_data: true
+      keep_message: true
     # === Scenario Builder Loop ===
     - from: Scenario_Builder
       to: Scenario_Critic
