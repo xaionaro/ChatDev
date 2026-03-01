@@ -264,8 +264,6 @@ graph:
 
           ## Decision
           DESIGN_APPROVED or DESIGN_NEEDS_WORK
-
-          IMPORTANT: Your last line must contain either "DESIGN_APPROVED" or "DESIGN_NEEDS_WORK" as a routing keyword.
     - id: Design_Review
       type: human
       config:
@@ -447,8 +445,6 @@ graph:
           1. [Most critical problem with actionable fix]
           2. [Second problem with actionable fix]
           SCENARIO_NEEDS_WORK
-
-          IMPORTANT: Your last line of output must contain either "SCENARIO_APPROVED" or "SCENARIO_NEEDS_WORK" as a routing keyword. This is CRITICAL for the pipeline to continue.
 
     - id: Planner
       type: agent
@@ -1323,8 +1319,6 @@ graph:
           Improvement Suggestions:
           - [Actionable fix 1]
           - [Actionable fix 2]
-
-          IMPORTANT: Your last line must contain either "APPROVE" or "NEEDS_REFINEMENT" as a routing keyword.
         tooling:
           - type: function
             config:
@@ -1539,7 +1533,8 @@ graph:
     - from: WASM_Builder
       to: Final_Review
       condition: code_success
-      carry_data: false
+      carry_data: true
+      keep_message: true
     - from: Final_Review
       to: Polish_Developer
       condition:
@@ -1551,6 +1546,7 @@ graph:
           regex: []
           case_sensitive: false
       carry_data: true
+      keep_message: true
   initial_instruction: Describe a game idea — even a vague vibe or a weird "what if?" is enough (e.g., 'A game where your shadow is your enemy', 'Cooking but everything is alive and fighting back', 'You control gravity, not the player'). The system will twist your idea into something original, craft a rich humorous scenario, generate pixel art assets with AI, implement in Go with Ebitengine, add visual polish, perform QA, and compile to WebAssembly for browser play.
   start:
     - Game Designer
