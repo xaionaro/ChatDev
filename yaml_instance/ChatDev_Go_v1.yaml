@@ -49,7 +49,7 @@ graph:
         provider: openai
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat}
+        params: {protocol: chat, max_output_tokens: 128000}
         tooling:
           - type: function
             config:
@@ -83,7 +83,7 @@ graph:
         provider: openai
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat}
+        params: {protocol: chat, max_output_tokens: 128000}
         tooling:
           - type: function
             config:
@@ -116,7 +116,7 @@ graph:
           To complete the task, I will give you one or more instructions, and you must help me to write a specific solution that appropriately solves the requested instruction based on your expertise and my needs.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat}
+        params: {protocol: chat, max_output_tokens: 128000}
         tooling:
           - type: function
             config:
@@ -183,7 +183,7 @@ graph:
           To complete the task, you must call the functions to save or edit the codes that appropriately solves the requested instruction based on your expertise and customer's needs.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat}
+        params: {protocol: chat, max_output_tokens: 128000}
         tooling:
           - type: function
             config:
@@ -245,7 +245,7 @@ graph:
           To complete the task, you must call the functions to save or edit the codes that appropriately solves the requested instruction based on your expertise and customer's needs.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat}
+        params: {protocol: chat, max_output_tokens: 128000}
         tooling:
           - type: function
             config:
@@ -306,7 +306,7 @@ graph:
           You will receive the task from user.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat}
+        params: {protocol: chat, max_output_tokens: 128000}
         tooling:
           - type: function
             config:
@@ -366,7 +366,7 @@ graph:
           To complete the task, you must call the functions to save or edit the codes that appropriately solves the requested instruction based on your expertise and customer's needs.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat}
+        params: {protocol: chat, max_output_tokens: 128000}
         tooling:
           - type: function
             config:
@@ -403,7 +403,7 @@ graph:
           You will receive the task from user.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat}
+        params: {protocol: chat, max_output_tokens: 128000}
         tooling:
           - type: function
             config:
@@ -503,6 +503,14 @@ graph:
               fmt.Println("Hello, world!")
           }
 
+          [CODE ORGANIZATION]
+          Split your code into multiple focused files — do NOT put everything into a single file. Each file should have a clear single responsibility:
+          - `main.go` — only the entry point (main function), kept minimal.
+          - Separate files for each major concern: e.g., `server.go`, `handlers.go`, `models.go`, `config.go`, `game.go`, `renderer.go`, `input.go`, etc.
+          - Group related types, functions, and methods together in the same file.
+          - Use separate packages when the project is large enough to warrant it.
+          This keeps files small, readable, and easier to test individually.
+
           Please note that the code should be fully functional. Ensure to implement all functions. No placeholder implementations.
           You should call the provided functions to save your code.
 
@@ -574,7 +582,7 @@ graph:
           For every bug you discover, explicitly require that the programmer adds a regression test covering that specific bug before the fix is considered complete.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat}
+        params: {protocol: chat, max_output_tokens: 128000}
         tooling:
           - type: function
             config:
