@@ -49,7 +49,7 @@ graph:
         provider: openai
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat, max_output_tokens: 128000}
+        params: {protocol: chat}
         tooling:
           - type: function
             config:
@@ -83,7 +83,7 @@ graph:
         provider: openai
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat, max_output_tokens: 128000}
+        params: {protocol: chat}
         tooling:
           - type: function
             config:
@@ -116,7 +116,7 @@ graph:
           To complete the task, I will give you one or more instructions, and you must help me to write a specific solution that appropriately solves the requested instruction based on your expertise and my needs.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat, max_output_tokens: 128000}
+        params: {protocol: chat}
         tooling:
           - type: function
             config:
@@ -183,7 +183,7 @@ graph:
           To complete the task, you must call the functions to save or edit the codes that appropriately solves the requested instruction based on your expertise and customer's needs.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat, max_output_tokens: 128000}
+        params: {protocol: chat}
         tooling:
           - type: function
             config:
@@ -245,7 +245,7 @@ graph:
           To complete the task, you must call the functions to save or edit the codes that appropriately solves the requested instruction based on your expertise and customer's needs.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat, max_output_tokens: 128000}
+        params: {protocol: chat}
         tooling:
           - type: function
             config:
@@ -306,7 +306,7 @@ graph:
           You will receive the task from user.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat, max_output_tokens: 128000}
+        params: {protocol: chat}
         tooling:
           - type: function
             config:
@@ -366,7 +366,7 @@ graph:
           To complete the task, you must call the functions to save or edit the codes that appropriately solves the requested instruction based on your expertise and customer's needs.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat, max_output_tokens: 128000}
+        params: {protocol: chat}
         tooling:
           - type: function
             config:
@@ -403,7 +403,7 @@ graph:
           You will receive the task from user.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat, max_output_tokens: 128000}
+        params: {protocol: chat}
         tooling:
           - type: function
             config:
@@ -582,7 +582,7 @@ graph:
           For every bug you discover, explicitly require that the programmer adds a regression test covering that specific bug before the fix is considered complete.
         base_url: ${BASE_URL}
         api_key: ${API_KEY}
-        params: {protocol: chat, max_output_tokens: 128000}
+        params: {protocol: chat}
         tooling:
           - type: function
             config:
