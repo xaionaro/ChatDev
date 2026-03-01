@@ -79,7 +79,7 @@ graph:
              - What's the "oh no" moment that happens around 30-60 seconds?
              - What's the climax — the moment the player either triumphs or spectacularly fails?
              - Define a scoring system that rewards SKILL and RISK-TAKING, not just survival time. Bonus multipliers for dangerous play.
-          4. **Visual Identity**:
+          5. **Visual Identity**:
              - Choose a visual style that fits the game theme:
                * Retro: Warm colors (beige, orange, brown), pixelated feel
                * Minimal: Few colors (2-3), high contrast, clean
@@ -89,7 +89,7 @@ graph:
              - Color Palette (3-5 colors with HEX codes matching the chosen style)
              - Geometric shapes for player/enemies/objects (drawn via Ebitengine vector package)
              - At least ONE visual effect that makes the core mechanic feel "juicy" (screen shake, particle burst, color flash, slow-motion frame, trail effect)
-          5. **Game Feel Details**: Describe specific "juice" moments — what happens visually/audibly when the player does the core action? Make it VISCERAL.
+          6. **Game Feel Details**: Describe specific "juice" moments — what happens visually/audibly when the player does the core action? Make it VISCERAL.
 
           # Output Format (Markdown)
           ## Game Concept
