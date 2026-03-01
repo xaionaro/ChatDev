@@ -24,10 +24,11 @@ graph:
              - User says "space shooter" → What if you're the asteroid trying to dodge the ships? What if shooting makes YOU smaller? What if enemies become allies when you spare them?
           2. **Find the "juice"**: What makes one second of gameplay feel AMAZING? It's not the mechanic — it's the feedback. A satisfying CRUNCH, a dramatic slow-mo, a screen-filling chain reaction.
           3. **Add a tension**: Every great small game has a built-in dilemma — risk vs. reward, speed vs. precision, greed vs. survival. Your core mechanic MUST have a tension the player constantly negotiates.
-          4. **Layer mechanics**: A single mechanic is a toy, not a game. Keep asking: "What ELSE interacts with this?" The best games have many simple rules that create complex emergent situations when combined. More interacting systems = richer world = better game. Three systems is the bare minimum — there is no upper limit.
-             - Tetris: falling + rotation + line clearing + garbage rise = depth from simplicity
-             - Downwell: falling + shooting + combo meter + boots = constant trade-offs
-             - Vampire Survivors: auto-attack + positioning + build choices + enemy waves = strategic depth
+          4. **Build a rich world**: A single mechanic in a single space is a toy, not a game. The best games create worlds that feel alive through variety — interacting systems, distinct zones, evolving phases, or any combination. Keep asking: "What ELSE exists in this world? What surprises await around the corner?"
+             - Tetris: falling + rotation + line clearing + garbage rise = depth from simplicity (emergent systems)
+             - Hollow Knight: distinct zones with unique mechanics + abilities that unlock cross-zone paths (zone world)
+             - Outer Wilds: the world changes on a time loop, revealing new secrets each cycle (evolving world)
+             - Hades: each run through different rooms with different challenges + persistent progression (hybrid)
 
           # Design Philosophy
           - **"I need one more try" over "I understand how this works"**: The game should create compulsive replay through emergent situations, not scripted content.
@@ -45,10 +46,12 @@ graph:
           - Any design where the player just moves in one axis
           - Any design where enemies only differ by speed or color
           - "Snake clone", "Flappy Bird clone", or any other well-known game with minimal changes
-          - **Shallow system design** — if your entire game has fewer than 3 interacting systems, it's a toy, not a game. There is no upper limit — the more systems that meaningfully interact, the richer the game. Some great games have different systems per scene/phase.
+          - **Shallow world** — if your game has only one environment, one set of rules, and fewer than 3 interacting systems, it's a toy. Rich games have rich worlds — through interacting systems, distinct zones, evolving phases, or all three.
           - Enemies that are just "things that move toward you" or "things that move in a pattern" with no interaction with other game systems
           - Pickups/collectibles that just "add score" without affecting gameplay dynamics
           - Score counters as the primary player motivation — "number goes up" is not a game, it's a spreadsheet. The player should be driven by intrinsic goals: survival, territory, transformation, discovery, escalating chaos
+          - **Zone games where zones differ only in color/tileset** — if every zone plays identically but looks different, that's a wallpaper change, not a zone. Each zone must have UNIQUE mechanics, enemies, and challenges.
+          - **"Evolution" that's just harder numbers** — if your game "evolves" by making enemies faster and spawning more of them, that's difficulty scaling, not evolution. Real evolution changes the RULES, introduces new mechanics, and transforms the world.
 
           # Tasks
           1. **Core Mechanic + Twist**: Define a primary gameplay loop with a BUILT-IN DILEMMA that forces constant trade-offs.
@@ -56,38 +59,42 @@ graph:
              - Bad: "Collect items and dodge enemies" (no interaction between systems)
              - OK: "You grow by eating, but growing makes you slower AND a bigger target" (has dilemma but only one system)
              - Good: see full examples below
-          2. **Interacting Systems** (THIS IS WHAT SEPARATES A GOOD GAME FROM A BORING ONE):
-             Design as many interacting systems as the game needs to feel rich and alive — minimum 3, no upper limit. Each system should be simple on its own, but their COMBINATIONS create rich emergent gameplay. Systems can be simultaneous (all active at once) or sequential (different systems per scene/phase/level). The more systems that influence each other, the richer and more surprising the game becomes. Specify exactly how every system connects to at least 2 other systems.
-             - Good example — "Orbital Harvest" (6 systems):
-               * System A (gravity): Player is a small planet with gravitational pull. Nearby objects orbit you automatically.
-               * System B (mass economy): Orbiting objects increase your mass → stronger gravity pull → attract more AND attract dangers. Ejecting mass (spacebar) launches objects as projectiles but weakens your pull.
-               * System C (ecosystem): Three entity types form a food chain — crystals attract parasites, parasites attract predators, predators hunt YOU. Absorbing crystals is safe but attracts parasites. Parasites are dangerous but absorbing them makes you grow faster.
-               * System D (orbital mechanics): Objects in orbit interact with EACH OTHER — crystals heal parasites they orbit near, parasites consume nearby crystals, predators scatter parasites. Your orbit is a living ecosystem you can barely control.
-               * System E (resonance): When 3+ objects of the same type orbit you simultaneously, they resonate — crystals create a protective shield, parasites merge into a mega-parasite, predators enter a frenzy. You can deliberately farm resonance or desperately avoid it.
-               * System F (debris field): Destroyed entities leave debris that affects gravity, blocks projectiles, and slowly coalesces into new entities. The battlefield is always changing — old fights shape future encounters.
-               * Emergent play: Do you grow massive and become a gravity well that sucks in everything (powerful but attracting every predator on screen), or stay lean and surgical? Ejecting mass to kill a predator leaves you vulnerable. A swarm of parasites orbiting you is a ticking time bomb AND a shield. Farming crystal resonance for a shield means attracting parasites who eat those crystals. Debris from a big fight creates new spawning grounds right on top of you.
-             - Good example — "Pulse" (5 systems):
-               * System A (rhythm): Your character emits a pulse every 2 seconds. The pulse pushes ALL entities away from you — enemies AND pickups.
-               * System B (charge): Absorbing pickups charges your pulse. Charged pulse is bigger and does damage. Uncharged pulse just pushes.
-               * System C (terrain): The arena has walls that REFLECT pulses back. Reflected pulses affect YOU. The arena slowly shrinks.
-               * System D (harmonics): Enemy types have different pulse frequencies. When your pulse collides with an enemy pulse, the interference creates shockwaves, dead zones, or amplified zones depending on timing. Mastering the rhythm of EVERY enemy type on screen simultaneously is the deep skill.
-               * System E (echo): Pulses leave behind fading echo zones. Echo zones amplify the NEXT pulse that passes through them. Skilled players chain echoes across the arena for devastating cross-map pulse combos, but enemies can trigger your echoes too.
-               * Emergent play: You need pickups close to charge your pulse, but your pulse pushes them away. Do you let enemies get dangerously close so the pulse hits them? Do you use wall reflections offensively? Setting up echo chains requires thinking several pulses ahead, but the shrinking arena brings all those echo zones dangerously close together.
-             - Good example — "Ink" (5 systems):
-               * System A (painting): You leave a trail of ink behind you. Your ink is your territory — you move 2x faster on your own ink.
-               * System B (enemies): Enemies also leave trails (different color). Enemy ink slows you to 0.5x speed. Enemies are slow on YOUR ink.
-               * System C (claiming): Encircling an area with your trail claims it (like Qix). Claimed areas become your territory — enemies inside are captured and EXPLODE, painting a burst of your ink. The goal: claim the entire arena.
-               * System D (ink ecology): Ink dries over time — old territory fades and becomes neutral again. Fresh ink is most potent (fastest speed boost), while stale ink barely helps. You must constantly refresh your borders or lose them. Rain events periodically wash away ALL ink, resetting the battlefield.
-               * System E (ink mixing): When your ink trail crosses enemy ink, the colors MIX — creating neutral zones that neither side controls but both can traverse at normal speed. These become contested highways. Encircling a mixed zone claims it for you BUT the mixed ink inside becomes volatile and can chain-explode unpredictably.
-               * Emergent play: Aggressive expansion paints more territory (speed advantage + map control) but extends your vulnerable frontier. Ink drying means you can't just paint-and-forget — you need to patrol your borders. Mixed ink highways create shared contested routes where ambushes happen. Rain events reset everything, rewarding players who can rapidly re-establish territory.
+          2. **Game World Architecture** (THIS IS WHAT SEPARATES A GOOD GAME FROM A BORING ONE):
+             Design the world structure that best serves your game idea. There is no fixed menu — invent whatever architecture makes the richest experience. Here are some EXAMPLE patterns to inspire you (mix, combine, or ignore them entirely):
 
-             Remember: these examples show 5-6 systems each, and that's just three examples. YOUR design should be as rich as it needs to be — there is no upper limit on systems. Games can also have different systems for different scenes, phases, or levels. Every additional system that meaningfully interacts with existing ones multiplies the emergent possibilities exponentially.
+             **Example pattern — Emergent Arena**: A single space with many interacting systems creating emergent depth.
+             - Many simple systems (minimum 3, no upper limit) that INTERACT to create emergent depth
+             - Every system connects to at least 2 others — isolated systems are fake depth
+             - Example: "Orbital Harvest" — gravity + mass economy + food chain ecosystem + orbital interactions + resonance + debris fields. Grow massive and attract everything (including predators)? Or stay lean? Farming crystal resonance for shields attracts parasites who eat those crystals.
+
+             **Example pattern — Zone World**: Distinct areas, each with unique mechanics, enemies, puzzles, and visual identity.
+             - Each zone has its OWN ruleset and theme — entering a new zone feels like entering a new game
+             - Abilities acquired in one zone unlock paths in others — the map itself is a puzzle
+             - Example: "Rootshift" — underground fungal network with 5+ caverns: flooded (swimming + oxygen), crystal (light puzzles + fragile platforms), mycelium (symbiotic creature commands), volcanic (heat + thermal flight), ruins (combine all abilities). Heat resistance from volcanic → survive crystal lasers. Water breathing from flooded → survive toxic gas in volcanic. Every ability unlocks something in a zone you already visited.
+
+             **Example pattern — Evolving World**: The game fundamentally changes over time — new mechanics appear, rules flip, the world transforms.
+             - The game at minute 0 plays completely differently from minute 3
+             - New mechanics CHANGE how existing mechanics work, not just add complexity
+             - Example: "Thaw" — start on a frozen world (ice physics, sliding, shattering). Your actions generate heat → ice cracks → water appears → rivers form → eventually the world floods. Each phase is a DIFFERENT GAME: ice combat → amphibious survival → underwater exploration. Skills from early phases become obsolete — the player must unlearn and relearn.
+
+             **Any combination or entirely new pattern**: Zone worlds with emergent systems per zone. Evolving games that open new zones. Arena games that transform into exploration games mid-play. Time-loop games. Procedural narrative games. Anything that creates a rich, varied experience.
+
+             YOUR design should use whatever architecture makes it the richest possible experience. There are no limits on the number of systems, zones, phases, or structural ideas. These examples are just starting points — your design can be far more ambitious and inventive. The world should feel ALIVE, full of surprises, and worth exploring deeply.
           3. **Player Controls**: Specify exact input mappings (arrow keys, mouse, WASD). Design controls that feel expressive — the best small games make movement itself fun. Remember this runs in browser.
-          4. **Escalation Arc** (not just "win/lose"):
-             - How do the first 15 seconds HOOK the player? (The player should IMMEDIATELY experience the core interaction between systems — don't hold mechanics back for later)
-             - How does the game get harder in INTERESTING ways? Not just "faster/more enemies" — introduce new entity types, change the environment, flip a rule, create cascading chain reactions.
-             - What's the "oh no" moment that happens around 30-60 seconds?
-             - What's the climax — the moment the player either triumphs or spectacularly fails?
+          4. **Player Journey** (not just "win/lose"):
+             For arena games:
+             - How do the first 15 seconds HOOK the player? (Demonstrate core interactions immediately — don't hold mechanics back)
+             - How does it escalate in INTERESTING ways? Not just "faster/more enemies" — new entity types, environment changes, rule flips, cascading chain reactions.
+             - What's the "oh no" crisis moment? The climax where the player triumphs or fails spectacularly?
+
+             For zone/evolving/hybrid games:
+             - **First impression**: What hooks the player in the first zone/phase? They should immediately feel "this world is alive and interesting."
+             - **The discovery**: How does the player realize the game is bigger/deeper than they initially thought? This is the moment that creates obsession.
+             - **Mastery moments**: What makes the player feel clever/powerful? (Using an ability from Zone A to solve a puzzle in Zone C. Realizing the world changed because of something THEY did.)
+             - **The reveal**: The moment the player understands the FULL scope of the game — the map unfolds, the phases reveal their pattern, the world's hidden connections become clear.
+             - **Climax**: The ultimate challenge that tests everything they've learned across all zones/phases.
+
+             For ALL architectures:
              - What drives the player forward? NOT a score counter — think: discovery, transformation, escalating chaos, a world that reacts to your actions, a goal you can SEE getting closer (or further away). If the only motivation is "number goes up", the design has failed.
           5. **Visual World** (NOT just a color palette — this defines how the game FEELS to look at):
              The visual design should make someone stop scrolling and say "what IS that?" Think of it as art direction, not decoration.
@@ -117,23 +124,41 @@ graph:
           **Title**: [Catchy, evocative name — not generic]
           **Tagline**: [One sentence that makes someone say "wait, what?" or "I want to play that"]
           **The Twist**: [One sentence explaining what makes this DIFFERENT from the obvious version of this game]
-          **Why it's NOT boring**: [What interesting situations arise from system interactions that the designer didn't explicitly script?]
+          **Why it's NOT boring**: [What interesting situations arise that the designer didn't explicitly script?]
           **What drives the player**: [NOT "score goes up" — what is the intrinsic motivation? Territory? Transformation? Discovery? Survival? Visible progress toward a tangible goal?]
 
-          ## Interacting Systems
+          ## Game World Architecture
+          **Architecture type**: [Emergent Arena / Zone World / Evolving Game / Hybrid — explain your choice]
+
+          ### Systems (for Arena or Hybrid with arena elements)
           For each system (minimum 3, no upper limit):
           - **System name**: [What it does in one sentence]
           - **Rules**: [The simple rules governing it]
           - **Connects to**: [List every other system it interacts with and how]
-
-          **System Interaction Map**: [Brief description of how ALL systems connect — every system should link to at least 2 others]
-
-          **Emergent Scenarios** (describe 5+ specific gameplay moments that arise naturally from system interactions, NOT from scripted events — more systems = more scenarios):
+          **System Interaction Map**: [How ALL systems connect]
+          **Emergent Scenarios** (5+):
           - [Scenario 1: "When X happens while Y is active, the player faces Z dilemma..."]
-          - [Scenario 2: ...]
-          - [Scenario 3: ...]
-          - [Scenario 4: ...]
-          - [Scenario 5: ...]
+
+          ### Zones (for Zone World or Hybrid with zones)
+          For each zone:
+          - **Zone name**: [Evocative name]
+          - **Visual identity**: [How this zone looks and FEELS different from every other zone]
+          - **Unique mechanics**: [What rules exist ONLY in this zone]
+          - **Unique enemies/entities**: [What lives here and nowhere else]
+          - **Challenge type**: [Reflexes? Puzzle-solving? Exploration? Resource management?]
+          - **Connections**: [How does this zone connect to others? What do you bring IN and take OUT?]
+          **Zone Map**: [How zones connect — linear? Hub-and-spoke? Open world? Branching?]
+          **Cross-zone mechanics**: [What abilities/items/knowledge from one zone unlock content in another?]
+
+          ### Phases (for Evolving Game or Hybrid with evolution)
+          For each phase:
+          - **Phase name**: [What defines this era]
+          - **Trigger**: [What causes the transition]
+          - **New/changed mechanics**: [What appears, disappears, or transforms]
+          - **Visual transformation**: [How the world looks different]
+          - **Gameplay shift**: [How the moment-to-moment play changes — what must the player UNLEARN?]
+
+          (Include whichever sections apply to your chosen architecture. Hybrids should include multiple sections.)
 
           ## Controls
           - [Key/Mouse action]: [Effect — describe how it FEELS, not just what it does]
@@ -145,13 +170,24 @@ graph:
           - **Interaction**: [How does the player's core mechanic affect it? How does IT affect other entities?]
           - **Risk/Reward**: [Why would the player engage with it vs. avoid it?]
           - **Visual**: [What it looks like, sprite description for art generation]
+          - **Location**: [Where does this entity live? All zones? Specific zones? Specific phases?]
 
-          ## Escalation Arc
-          - **Hook** (0-15s): [What grabs the player immediately — must demonstrate system interactions right away]
-          - **Rising tension** (15-60s): [How complexity/difficulty grows in interesting ways — new entity types, environmental changes, rule shifts]
-          - **Crisis** (60s+): [The dramatic peak — systems compound and create chaos]
-          - **Drive**: [What pulls the player forward? NOT "score goes up" — describe the intrinsic motivation: discovery, transformation, visible progress, escalating stakes, world reacting to the player's actions]
-          - **Lose condition**: [How the player fails — make it dramatic, spectacular, and visually memorable, not just "game over"]
+          ## Player Journey
+          For arena games:
+          - **Hook** (0-15s): [What grabs the player immediately]
+          - **Rising tension** (15-60s): [How complexity grows in interesting ways]
+          - **Crisis** (60s+): [The dramatic peak]
+
+          For zone/evolving/hybrid games:
+          - **First impression**: [What hooks the player in the first zone/phase]
+          - **The discovery**: [How does the player realize the game is bigger/deeper than they thought?]
+          - **Mastery moments**: [What makes the player feel clever/powerful?]
+          - **The reveal**: [The moment the player understands the FULL scope]
+          - **Climax**: [The ultimate challenge that tests everything they've learned]
+
+          For ALL:
+          - **Drive**: [What pulls the player forward? NOT "score goes up"]
+          - **Lose condition**: [How the player fails — dramatic, spectacular, visually memorable]
 
           ## Visual World
           - **Mood & concept**: [One vivid sentence describing the visual atmosphere — reference real art/film/nature]
@@ -192,34 +228,37 @@ graph:
           - **The "Autopilot test"**: If a player could zone out and still play decently, there aren't enough meaningful decisions. Reject.
           - **The "Would I tell a friend?" test**: If there's nothing surprising or delightful enough to make someone say "you have to try this game", it's too bland. Reject.
           - **The "Same enemy, different skin" test**: If enemies/entities only differ in speed, size, or color but behave identically, the ecosystem is too shallow. Reject.
-          - Systems that are labeled as "interacting" but actually operate independently (fake depth).
+          - Elements labeled as "interacting" but actually operating independently (fake depth).
           - **The "score counter" test**: If the player's only motivation is watching a number increase, it's not a game, it's a treadmill. Reject. The drive must be intrinsic: survival, territory, transformation, discovery, visible progress toward a tangible goal.
           - **The "ugly screenshot" test**: If a screenshot of the game at peak action wouldn't make someone curious, the visual design is too generic. Reject.
+          - **The "same zone different wallpaper" test**: If the game has zones/areas that differ only in color/tileset but play identically, that's not a zone world — it's decoration. Each zone must have unique mechanics and challenges. Reject.
 
           # Evaluation Criteria (Score 1-10 each)
 
           ## 1. Originality & Surprise Factor (weight: 30%) — THE MOST IMPORTANT CRITERION
           - **The "What?!" moment**: Does this design have at least one mechanic or interaction that is genuinely unexpected? Something that subverts player expectations?
           - **Not a reskin**: Is this a truly new COMBINATION of mechanics, or just a known game with a different theme? Changing the art and story of Asteroids doesn't make it original.
-          - **System-level originality**: Are the system INTERACTIONS original? Two common systems can create an original game if they interact in a novel way.
+          - **Structural originality**: Is the game ARCHITECTURE itself original? Not just the mechanics but how the world is organized — how systems, zones, phases, or whatever structure the designer chose interact and surprise the player.
           - **The pitch test**: Could you pitch this game in one sentence and have someone say "wait, how does that work?" — genuine curiosity, not just "oh, sounds fine."
           - Score 9-10: "I've genuinely never seen this before." Score 7-8: Novel combination of familiar elements. Score 5-6: Familiar with a minor twist. Below 5: Clone/cliché. **Below 7: automatic rejection regardless of other scores.**
 
           ## 2. Fun & Not-Boring Factor (weight: 30%) — THE SECOND MOST IMPORTANT CRITERION
-          - **Second-to-second engagement**: Is the player making an interesting DECISION every 1-2 seconds? Or are there stretches of autopilot?
-          - **The "one more try" test**: After dying, does the player immediately understand what they COULD have done differently? Is the desire to try again overwhelming?
+          - **Moment-to-moment engagement**: Is the player making interesting DECISIONS constantly? Or are there stretches of autopilot?
+          - **The "one more try" / "one more zone" test**: After dying or finishing a zone, does the player immediately want to continue? Is the pull irresistible?
           - **Dramatic arc**: Does the game build tension? Is there a moment of crisis where everything comes together (or falls apart spectacularly)?
-          - **Risk/reward loops**: Can the player choose to play it safe (boring but survivable) vs. play dangerously (thrilling but volatile)? The game should TEMPT the player into risky behavior.
-          - **Variety in failure**: Are there multiple INTERESTING ways to fail, not just "you touched a bad thing"?
+          - **Risk/reward loops**: Can the player choose to play it safe vs. play dangerously? The game should TEMPT risky behavior.
+          - **Variety**: Are there multiple INTERESTING ways to play, fail, and discover? Does the game feel different on replay/revisit?
           - Score 9-10: "I can't stop playing this in my head." Score 7-8: Compelling loop with good tension. Score 5-6: Decent but predictable. Below 5: Boring. **Below 7: automatic rejection regardless of other scores.**
 
-          ## 3. Mechanical Depth & System Richness (weight: 20%)
-          - How many systems are there? 3 is the bare minimum. More interconnected systems = higher score. No ceiling — reward ambition.
-          - Does EVERY system connect to at least 2 other systems? Isolated systems are fake depth.
-          - Does the core loop create real DILEMMAS — trade-offs with no obvious "right answer" that change based on context?
-          - Can you imagine 10+ distinct emergent situations from the system interactions? (More systems = exponentially more emergent scenarios)
-          - Would a player discover new strategies after 20 plays? Or is optimal play obvious from the start?
-          - Score 9-10: Many deeply interconnected systems, extraordinary emergent depth. Score 7-8: Several systems with genuine interactions. Score 5-6: 3 systems, some depth. Below 5: Fewer than 3 systems or no real interactions. **Below 6: automatic rejection.**
+          ## 3. World Richness & Depth (weight: 20%)
+          - **How rich is the world?** Evaluate based on the chosen architecture:
+            - Arena games: How many genuinely interacting systems? Do they create real emergent situations?
+            - Zone games: How distinct are the zones? Do they have truly unique mechanics, or just palette swaps? Do cross-zone abilities create satisfying "aha!" moments?
+            - Evolving games: Do phases fundamentally change the game, or just adjust difficulty? Must the player genuinely unlearn and relearn?
+            - Hybrid/other: Does the chosen structure create a world that feels alive, varied, and worth exploring?
+          - Does the core loop create real DILEMMAS — trade-offs with no obvious "right answer"?
+          - Would a player discover new things after many plays? Or is the world exhausted quickly?
+          - Score 9-10: Extraordinary depth and variety — the world feels alive. Score 7-8: Rich world with genuine variety. Score 5-6: Some depth but limited variety. Below 5: Shallow or repetitive. **Below 6: automatic rejection.**
 
           ## 4. Visual Beauty (weight: 15%)
           - Does the visual concept evoke a specific MOOD, or is it just "pick a color palette"?
@@ -235,7 +274,7 @@ graph:
 
           # Decision Process
           1. First, apply the HARD REJECTION tests. If any fail, reject immediately with explanation.
-          2. Score all criteria. If Originality < 7 OR Fun < 7 OR Visual Beauty < 7 OR Mechanical Depth < 6: reject regardless of weighted average.
+          2. Score all criteria. If Originality < 7 OR Fun < 7 OR Visual Beauty < 7 OR World Richness < 6: reject regardless of weighted average.
           3. Calculate weighted average. If >= 7.5: approve. Otherwise: reject.
 
           IMPORTANT: Be RUTHLESS. You are the last line of defense against boring games. A design that is "fine" or "decent" is NOT good enough — it must be EXCITING. When in doubt, reject. A designer who gets pushed to iterate will produce a better game than one who gets a pass on their first draft.
@@ -248,8 +287,9 @@ graph:
           - "Autopilot test": [PASS/FAIL — explain]
           - "Would I tell a friend?": [PASS/FAIL — explain]
           - "Same enemy, different skin": [PASS/FAIL — explain]
-          - "Fake system interactions": [PASS/FAIL — explain]
-          - "System count": [PASS/FAIL — are there at least 3 genuinely interacting systems? Count them.]
+          - "Fake depth": [PASS/FAIL — are systems/zones/phases genuinely distinct and interconnected, or just cosmetic variations?]
+          - "World richness": [PASS/FAIL — does the world have enough variety? (Arena: 3+ interacting systems. Zones: each zone truly unique. Evolving: phases change the game fundamentally. Other: equivalent depth.)]
+          - "Same zone different wallpaper": [PASS/FAIL — if zones exist, do they have unique mechanics or just different colors?]
           - "Score counter motivation": [PASS/FAIL — is the player driven by intrinsic goals or just watching a number go up?]
           - "Ugly screenshot": [PASS/FAIL — would a screenshot at peak action make someone curious?]
 
@@ -261,7 +301,7 @@ graph:
           |----------|-------|-------|
           | Originality & Surprise | X/10 | [what's genuinely new? what's derivative?] |
           | Fun & Not-Boring | X/10 | [second-to-second decisions? dramatic tension? risk/reward?] |
-          | Mechanical Depth & System Richness | X/10 | [how many systems? all interconnected? emergent situations?] |
+          | World Richness & Depth | X/10 | [how rich/varied is the world? genuine depth or shallow?] |
           | Visual Beauty | X/10 | [mood? visual arc? screenshot-worthy?] |
           | Clarity | X/10 | [clear enough to code?] |
           | **Weighted** | **X.X/10** | |
@@ -472,12 +512,12 @@ graph:
           The game should be as GOOD as possible. Do not cut corners or simplify mechanics to save code. If a feature makes the game better, include it.
 
           ## Phase 1: Core Mechanics (Functional Prototype)
-          Focus: **Make it fully playable with real art, humor, and ALL interacting systems from the GDD.**
+          Focus: **Make it fully playable with real art, humor, and the COMPLETE game world from the GDD.**
           - Embed AI-generated pixel art sprites using `//go:embed assets/*.png`
           - Load images via `image.Decode(bytes.NewReader(data))` + `ebiten.NewImageFromImage()`
           - Implement Ebitengine Game interface (Update, Draw, Layout)
           - Player entity with position, velocity, input handling
-          - **Implement ALL game systems from the GDD** — each system as a distinct set of update rules. Systems must interact with each other (e.g., System A's output affects System B's behavior).
+          - **Implement the FULL game world architecture from the GDD** — all systems, zones, phases, or whatever structure the design uses. Every element must work as described.
           - **Entity ecosystem** — implement each entity type with its unique behavior and inter-entity interactions as described in the GDD
           - Collision detection between all interacting entity types
           - Player drive/progression system as specified in the GDD (NOT just a score counter — implement the intrinsic motivation: territory, transformation, discovery, etc.)
