@@ -215,12 +215,12 @@ graph:
 
           This file will be read by all downstream agents (scenario writers, planners, developers).
           Always save the file, even when revising — overwrite with the latest version.
-      tooling:
-        - type: function
-          config:
-            auto_load: true
-            tools:
-              - name: save_file
+        tooling:
+          - type: function
+            config:
+              auto_load: true
+              tools:
+                - name: save_file
     - id: Design_Critic
       type: agent
       context_window: 0
@@ -435,13 +435,13 @@ graph:
           - content: the COMPLETE scenario document
 
           Always save the file, even when revising — overwrite with the latest version.
-      tooling:
-        - type: function
-          config:
-            auto_load: true
-            tools:
-              - name: save_file
-              - name: read_text_file_snippet
+        tooling:
+          - type: function
+            config:
+              auto_load: true
+              tools:
+                - name: save_file
+                - name: read_text_file_snippet
     - id: Scenario_Critic
       type: agent
       context_window: 0
@@ -616,13 +616,13 @@ graph:
           - content: the COMPLETE implementation plan
 
           Always save the file, even when revising — overwrite with the latest version.
-      tooling:
-        - type: function
-          config:
-            auto_load: true
-            tools:
-              - name: save_file
-              - name: read_text_file_snippet
+        tooling:
+          - type: function
+            config:
+              auto_load: true
+              tools:
+                - name: save_file
+                - name: read_text_file_snippet
     - id: Art_Director
       type: agent
       context_window: 0
