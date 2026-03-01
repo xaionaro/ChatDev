@@ -1374,7 +1374,6 @@ graph:
     # === Human Design Review ===
     - from: Design_Review
       to: Game Designer
-      trigger: true
       condition:
         type: keyword
         config:
@@ -1386,7 +1385,6 @@ graph:
       carry_data: true
     - from: Design_Review
       to: Scenario_Builder
-      trigger: false
       condition:
         type: keyword
         config:
