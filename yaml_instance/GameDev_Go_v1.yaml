@@ -741,7 +741,9 @@ graph:
           using the `critique_image` vision tool and decide if they meet quality standards.
 
           # Context
-          Call `read_text_file_snippet` with path="docs/gdd.md" to understand the intended art style and palette.
+          Read the design documents to understand the intended art style, palette, and character descriptions:
+          1. Call `read_text_file_snippet` with path="docs/gdd.md" for the GDD
+          2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
 
           # Process
           1. Call `describe_available_files` to find all image files in the assets/ directory
@@ -808,7 +810,9 @@ graph:
           using the improved prompts provided by the Art Critic.
 
           # Context
-          Call `read_text_file_snippet` with path="docs/gdd.md" to understand the intended art style and palette.
+          Read the design documents to understand the intended art style, palette, and character descriptions:
+          1. Call `read_text_file_snippet` with path="docs/gdd.md" for the GDD
+          2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
 
           # Process
           1. Parse the Art Critic's feedback to find:
