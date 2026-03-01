@@ -716,46 +716,44 @@ graph:
 
           # Asset Planning
           Analyze the GDD, scenario, and plan to identify EVERY visual asset the game needs.
-          Think about ALL gameplay situations, states, zones, and phases described in the design.
+          Do NOT assume any genre conventions — derive the asset list ENTIRELY from what the GDD
+          and scenario describe. Not every game has enemies, health bars, or attacks. Read the
+          design carefully and create assets for what THIS game actually needs.
 
-          For each entity (player, enemies, NPCs, objects), consider:
-          - Different states: idle, moving, attacking, hurt, dead, special abilities
-          - Different directions: left/right facing, up/down (if relevant to gameplay)
-          - Different forms: if the entity transforms, evolves, or changes during gameplay
-          - Zone/phase variants: if the entity looks different in different zones or phases
+          For each character/entity described in the GDD:
+          - Every visual state the game requires (these vary by game — could be poses, emotions,
+            phases, transformations, growth stages, or anything else the design specifies)
+          - Direction variants if the game uses directional movement
+          - Form variants if the entity changes during gameplay
 
-          Also consider:
-          - **Backgrounds**: one per zone, phase, or distinct area — NOT just one for the whole game
-          - **Environment objects**: platforms, obstacles, collectibles, interactables, hazards
-          - **Effects/particles**: explosions, projectiles, power-ups, status effects
-          - **UI elements**: health bar, icons, title screen elements, buttons
+          For environments and scenes described in the GDD:
+          - A background for each distinct area, zone, phase, or scene — not just one
+          - Environment elements specific to each area (what the GDD describes, not generic "platforms")
 
-          The goal is to produce ENOUGH assets so the developers can build the complete game
-          without placeholder art. A rich game needs rich art — 15-30+ assets is normal.
+          For any other visual elements the GDD mentions:
+          - Collectibles, tools, effects, projectiles, UI elements — whatever the design calls for
+          - Only include what the GDD actually describes; do not invent generic game elements
+
+          The goal is to produce ENOUGH assets so developers can build the complete game
+          without placeholder art. A rich game needs rich art — 15-30+ assets is typical.
 
           # Prompt Engineering Rules
           Each prompt MUST include:
-          - Art style keywords matching the GDD's visual concept (e.g., "pixel art, retro" or "painterly, soft edges" or "geometric, flat design")
+          - Art style keywords matching the GDD's visual concept
           - Dimensions appropriate for the style
           - Color hints matching the GDD palette
-          - "white background" or "transparent background" for character/object images
-          - Character description from the scenario (personality visible in design)
+          - "white background" or "transparent background" for individual entity/object images
+          - Visual description drawn from the GDD and scenario
           - NO text in the image
 
           # Output Format (STRICT)
-          For each asset, output exactly this format (one pair per asset):
+          For each asset, output exactly one ASSET/PROMPT pair:
 
-          ASSET: assets/player_idle.png
+          ASSET: assets/[descriptive_name].png
           PROMPT: [art style] [description], [dimensions], [style keywords], white background, no text
 
-          ASSET: assets/player_walk.png
-          PROMPT: [art style] [description], [dimensions], [style keywords], white background, no text
-
-          ASSET: assets/player_attack.png
-          PROMPT: [art style] [description], [dimensions], [style keywords], white background, no text
-
-          Use descriptive filenames that indicate the entity and state (e.g., player_idle.png,
-          enemy_slime_hurt.png, bg_forest.png, collectible_gem.png, effect_explosion.png).
+          Use descriptive filenames that indicate what the asset is and its state/variant
+          (e.g., character_idle.png, character_running.png, bg_cave.png, orb_glowing.png).
 
           Output ONLY the ASSET/PROMPT pairs. No explanations, no commentary.
           Generate as many assets as the game design requires — don't limit yourself to a handful.
