@@ -155,6 +155,7 @@ graph:
           7) proper error handling following Go conventions (check and return errors, don't ignore them);
           8) [AUTO-TEST COVERAGE] every `.go` source file must have a corresponding `*_test.go` with unit tests achieving >= 90% line coverage. There must also be `e2e_test.go` files (with `//go:build e2e` tag) covering >= 85% of user-facing features. Run `go_test` with `-v -cover ./...` to verify. If coverage is insufficient, this is a review comment;
           9) [REGRESSION TESTS FOR ISSUES] every bug or issue you find during this review MUST have a corresponding auto-test that would catch it. If you find an issue and there is no test covering it, instruct the programmer to add a regression test for that specific issue in addition to fixing the code;
+          10) [PLACEHOLDER ASSET DIMENSIONS] if the project creates any placeholder assets (images, sprites, icons, UI elements, textures, etc.), verify that each placeholder has width and height appropriate for what it needs to visually express. Placeholders must not use arbitrary or uniform sizes — each must be tailored to its purpose (e.g., a character sprite needs enough pixels for recognizable features, an icon must be legible at display size, a background must cover the viewport). If any placeholder has inappropriate dimensions, this is a review comment;
           You should call provided function to load the codes.
           Now, you should check the above regulations one by one and review the codes in detail, propose one comment with the highest priority about the codes, and give me instructions on how to fix. Tell me your comment with the highest priority and corresponding suggestions on revision. If the codes are perfect and you have no comment on them, return only one line like "<INFO> Finished"
         role: user
@@ -213,6 +214,9 @@ graph:
           Source Code: You should call the provided functions to load the codes.
           Unimplemented File: You should find all unimplemented functions and methods by calling provided functions and then, implement them.
           As the Programmer, to satisfy the complete function of our developed software, you have to implement all functions and methods in the unimplemented files. Now, implement all methods of the unimplemented files and all other codes needed.
+
+          [PLACEHOLDER ASSET DIMENSIONS CHECK]
+          Verify that all placeholder assets (images, sprites, icons, UI elements, textures, etc.) have dimensions (width and height) appropriate for what they need to visually express. Each placeholder must have dimensions tailored to its specific purpose — not arbitrary or uniform sizes. If any placeholder has inappropriate dimensions, fix it now.
 
           [AUTO-TEST COMPLETENESS CHECK]
           You must also verify that auto-tests are complete:
@@ -501,6 +505,14 @@ graph:
 
           Please note that the code should be fully functional. Ensure to implement all functions. No placeholder implementations.
           You should call the provided functions to save your code.
+
+          [PLACEHOLDER ASSET DIMENSIONS]
+          When creating placeholder assets (images, sprites, icons, UI elements, textures, etc.), you MUST carefully choose appropriate width and height for each asset based on what it needs to visually express. Consider:
+          - What content the asset represents (e.g., a character sprite needs enough pixels for recognizable limbs/features; an icon needs to be legible at its display size; a background needs to cover the intended viewport).
+          - The context where the asset will be displayed (window size, layout position, scaling).
+          - Aspect ratio appropriate for the content (e.g., a banner is wide, a portrait is tall, a tile is square).
+          - Minimum resolution needed for the visual information to be readable/recognizable.
+          Do NOT use arbitrary or uniform sizes for all placeholders. Each placeholder must have dimensions tailored to its specific purpose.
 
           [MANDATORY AUTO-TEST REQUIREMENT]
           You MUST write automated tests alongside your implementation code. Tests are NOT optional — they are a core deliverable, just like the implementation itself. For every `.go` source file you create, you must also create the corresponding `*_test.go` file in the same package.
