@@ -1510,10 +1510,6 @@ graph:
       to: Art_Critic
       trigger: true
       carry_data: true
-    - from: Art_Generator
-      to: Core_Developer
-      carry_data: true
-      trigger: false
     - from: Art_Critic
       to: Art_Refiner
       condition:
@@ -1534,11 +1530,7 @@ graph:
       to: Art_Critic
       trigger: true
       carry_data: true
-    - from: Art_Refiner
-      to: Core_Developer
-      carry_data: true
-      trigger: false
-    # === Feed all developers with GDD, Scenario, Plan, and ArtMaterials ===
+    # === Feed all developers with GDD, Scenario, and Plan ===
     - from: Game Designer
       to: Polish_Developer
       carry_data: true
@@ -1584,38 +1576,6 @@ graph:
       carry_data: true
       trigger: false
     - from: Planner
-      to: Bug_Fixer
-      carry_data: true
-      trigger: false
-    - from: Art_Generator
-      to: Polish_Developer
-      carry_data: true
-      trigger: false
-    - from: Art_Generator
-      to: QA_Agent
-      carry_data: true
-      trigger: false
-    - from: Art_Generator
-      to: Polish_Refinement
-      carry_data: true
-      trigger: false
-    - from: Art_Generator
-      to: Bug_Fixer
-      carry_data: true
-      trigger: false
-    - from: Art_Refiner
-      to: Polish_Developer
-      carry_data: true
-      trigger: false
-    - from: Art_Refiner
-      to: QA_Agent
-      carry_data: true
-      trigger: false
-    - from: Art_Refiner
-      to: Polish_Refinement
-      carry_data: true
-      trigger: false
-    - from: Art_Refiner
       to: Bug_Fixer
       carry_data: true
       trigger: false
