@@ -750,19 +750,25 @@ graph:
           2. For each failing asset, call `generate_image` with:
              - prompt: the revised PROMPT from the Art Critic
              - filename: the same ASSET path (overwrites the old version)
-          3. List the regenerated assets
+          3. After regenerating, call `describe_available_files` to get the COMPLETE list of all asset files
+          4. Output a COMPLETE manifest of ALL assets — both regenerated and unchanged
 
           # Output Format
-          Regenerated assets:
-          - [filename]: [size] bytes (was: [old issue])
-          ...
+          ## All Game Assets
 
-          Assets regenerated. Ready for re-evaluation.
+          ### Regenerated
+          - [filename]: [size] bytes — [what was fixed]
+
+          ### Unchanged (passed review)
+          - [filename]: [size] bytes — [description of what this asset depicts]
+
+          All assets ready for re-evaluation.
 
           # Rules
           - ONLY regenerate assets listed in the revision section
           - Do NOT touch passing assets
           - Use the revised prompts exactly as the Art Critic specified
+          - ALWAYS list ALL assets in output (regenerated AND unchanged) so downstream developers have the complete picture
         tooling:
           - type: function
             config:
