@@ -279,13 +279,6 @@ graph:
 
           ## Decision
           DESIGN_APPROVED or DESIGN_NEEDS_WORK
-    - id: Design_Review
-      type: human
-      config:
-        description: |-
-          Review the Game Design above. You can:
-          - Type APPROVE to proceed with this design
-          - Type your feedback to send the design back for revision (e.g., "make it more strategic", "I want a different core mechanic", "add more enemy variety")
     - id: Scenario_Builder
       type: agent
       context_window: 0
@@ -1393,13 +1386,6 @@ graph:
               tools:
                 - name: read_text_file_snippet
                 - name: save_file
-    - id: Final_Review
-      type: human
-      config:
-        description: |-
-          The game has been built and compiled to WebAssembly. Play it and review:
-          - Type ACCEPT to finish — the game is ready
-          - Type your feedback to send it back for refinement (e.g., "enemies are too fast", "needs more visual effects", "the controls feel sluggish", "add more variety")
   edges:
     # === Design Critique Loop ===
     - from: Game Designer
@@ -1415,39 +1401,13 @@ graph:
             - DESIGN_NEEDS_WORK
       carry_data: true
     - from: Design_Critic
-      to: Design_Review
+      to: Scenario_Builder
       condition:
         type: keyword
         config:
           any:
             - DESIGN_APPROVED
       carry_data: true
-      keep_message: true
-    # === Human Design Review ===
-    - from: Design_Review
-      to: Game Designer
-      condition:
-        type: keyword
-        config:
-          any: []
-          none:
-            - APPROVE
-          regex: []
-          case_sensitive: false
-      carry_data: true
-      keep_message: true
-    - from: Design_Review
-      to: Scenario_Builder
-      condition:
-        type: keyword
-        config:
-          any:
-            - APPROVE
-          none: []
-          regex: []
-          case_sensitive: false
-      carry_data: true
-      keep_message: true
     # === Scenario Builder Loop ===
     - from: Scenario_Builder
       to: Scenario_Critic
@@ -1544,28 +1504,10 @@ graph:
       to: Game_Launcher
       trigger: true
       carry_data: false
-    # === Final User Review ===
-    - from: WASM_Builder
-      to: Final_Review
-      condition: code_success
-      carry_data: true
-      keep_message: true
-    - from: Final_Review
-      to: Polish_Developer
-      condition:
-        type: keyword
-        config:
-          any: []
-          none:
-            - ACCEPT
-          regex: []
-          case_sensitive: false
-      carry_data: true
-      keep_message: true
   initial_instruction: Describe a game idea — even a vague vibe or a weird "what if?" is enough (e.g., 'A game where your shadow is your enemy', 'Cooking but everything is alive and fighting back', 'You control gravity, not the player'). The system will twist your idea into something original, craft a rich humorous scenario, generate pixel art assets with AI, implement in Go with Ebitengine, add visual polish, perform QA, and compile to WebAssembly for browser play.
   start:
     - Game Designer
   end:
-    - Final_Review
+    - WASM_Builder
 version: 1.0.0
 vars: {}
