@@ -714,11 +714,24 @@ graph:
           references were provided) — pixel art, painterly, minimalist,
           geometric, watercolor, vector-style, or any other style that fits the game's mood.
 
-          # Asset List (create prompts for each)
-          1. **Player image** — the main character
-          2. **Enemy/obstacle images** — 2-3 distinct types
-          3. **Background image** — the game world background (tileable if appropriate)
-          4. **Optional: UI accent** — a decorative element for score/title area
+          # Asset Planning
+          Analyze the GDD, scenario, and plan to identify EVERY visual asset the game needs.
+          Think about ALL gameplay situations, states, zones, and phases described in the design.
+
+          For each entity (player, enemies, NPCs, objects), consider:
+          - Different states: idle, moving, attacking, hurt, dead, special abilities
+          - Different directions: left/right facing, up/down (if relevant to gameplay)
+          - Different forms: if the entity transforms, evolves, or changes during gameplay
+          - Zone/phase variants: if the entity looks different in different zones or phases
+
+          Also consider:
+          - **Backgrounds**: one per zone, phase, or distinct area — NOT just one for the whole game
+          - **Environment objects**: platforms, obstacles, collectibles, interactables, hazards
+          - **Effects/particles**: explosions, projectiles, power-ups, status effects
+          - **UI elements**: health bar, icons, title screen elements, buttons
+
+          The goal is to produce ENOUGH assets so the developers can build the complete game
+          without placeholder art. A rich game needs rich art — 15-30+ assets is normal.
 
           # Prompt Engineering Rules
           Each prompt MUST include:
@@ -730,21 +743,22 @@ graph:
           - NO text in the image
 
           # Output Format (STRICT)
-          For each asset, output exactly this format:
+          For each asset, output exactly this format (one pair per asset):
 
-          ASSET: assets/player.png
+          ASSET: assets/player_idle.png
           PROMPT: [art style] [description], [dimensions], [style keywords], white background, no text
 
-          ASSET: assets/enemy1.png
+          ASSET: assets/player_walk.png
           PROMPT: [art style] [description], [dimensions], [style keywords], white background, no text
 
-          ASSET: assets/enemy2.png
+          ASSET: assets/player_attack.png
           PROMPT: [art style] [description], [dimensions], [style keywords], white background, no text
 
-          ASSET: assets/background.png
-          PROMPT: [art style] [description], [dimensions], [style keywords], no text
+          Use descriptive filenames that indicate the entity and state (e.g., player_idle.png,
+          enemy_slime_hurt.png, bg_forest.png, collectible_gem.png, effect_explosion.png).
 
           Output ONLY the ASSET/PROMPT pairs. No explanations, no commentary.
+          Generate as many assets as the game design requires — don't limit yourself to a handful.
         tooling:
           - type: function
             config:
