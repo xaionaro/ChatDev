@@ -200,6 +200,9 @@ graph:
           ## Technical Notes
           [Special considerations for implementation — focus on how systems interact in code]
 
+          ## Reference URLs
+          [If the user provided any URLs (YouTube videos, images, websites) as visual references or inspiration, list them here VERBATIM — one per line. If none were provided, write "None provided."]
+
           # Constraints
           - AI-generated art assets will be created later in the pipeline. Describe what each visual element should look like — the art style (pixel art, painterly, minimalist, geometric, etc.) is part of your creative vision.
           - Do NOT limit your design ambition for "simplicity" or "scope". Design the BEST game possible. The implementation team can handle complex code — a 2000-line game with rich mechanics is better than a 200-line toy. Focus on making the game GOOD, not making it small.
@@ -622,6 +625,65 @@ graph:
               tools:
                 - name: save_file
                 - name: read_text_file_snippet
+    - id: Reference_Gatherer
+      type: agent
+      context_window: 0
+      config:
+        provider: openai
+        name: claude
+        base_url: ${BASE_URL}
+        api_key: ${API_KEY}
+        params: {protocol: chat}
+        role: |-
+          # Role
+          You are a **Visual Reference Analyst**. Your job is to find visual reference URLs
+          in the Game Design Document and analyze them to guide the art pipeline.
+
+          # Process
+          1. Call `read_text_file_snippet` with path="docs/gdd.md" to read the GDD.
+          2. Look for the "## Reference URLs" section. Extract any URLs found there.
+             Also scan the entire GDD for YouTube links (youtube.com, youtu.be) or
+             image URLs (.png, .jpg, .jpeg, .gif, .webp).
+          3. For each YouTube URL found:
+             a. Call `download_video_snippet` with the URL (duration_seconds=60)
+             b. Call `extract_key_frames` with the downloaded video path (max_frames=6)
+             c. For each extracted frame, call `analyze_visual_reference` with the frame path
+          4. For each image URL found:
+             a. Call `download_image` with the URL
+             b. Call `analyze_visual_reference` with the downloaded image path
+          5. Compile ALL analyses into a comprehensive visual reference document:
+             - For each source: URL, type (video/image), and the analysis
+             - A final "Synthesized Art Direction" section summarizing:
+               * Recommended color palette (with HEX codes)
+               * Recommended art style
+               * Mood and atmosphere
+               * Key visual motifs and recurring elements
+          6. Call `save_file` with path="docs/visual_reference.md" and the full document.
+          7. Clean up: call `delete_path` on "reference_video.mp4" and "reference_frames/" directory.
+
+          # If No URLs Found
+          If no reference URLs are found in the GDD:
+          - Call `save_file` with path="docs/visual_reference.md" and content:
+            "# Visual References\n\nNo visual reference URLs were provided. Art direction
+            should be based entirely on the GDD and scenario documents."
+          - Output: "No visual references found." followed by NO_REFERENCES
+
+          # Output
+          End your message with exactly one of:
+          - REFERENCES_PROCESSED (if URLs were found and analyzed)
+          - NO_REFERENCES (if no URLs were found)
+        tooling:
+          - type: function
+            config:
+              auto_load: true
+              tools:
+                - name: read_text_file_snippet
+                - name: save_file
+                - name: delete_path
+                - name: download_video_snippet
+                - name: extract_key_frames
+                - name: analyze_visual_reference
+                - name: download_image
     - id: Art_Director
       type: agent
       context_window: 0
@@ -641,10 +703,15 @@ graph:
           1. Call `read_text_file_snippet` with path="docs/gdd.md" for the Game Design Document
           2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
           3. Call `read_text_file_snippet` with path="docs/plan.md" for the implementation plan
+          4. Call `read_text_file_snippet` with path="docs/visual_reference.md" for visual references (if available)
 
           # Your Task
-          Based on the GDD, scenario, and technical plan, define the art assets needed for the game.
-          Choose an art style that matches the GDD's visual concept — pixel art, painterly, minimalist,
+          Based on the GDD, scenario, technical plan, and visual references, define the art assets needed.
+          If visual references exist in docs/visual_reference.md, use them as the PRIMARY guide for
+          art style, color palette, and mood — they represent what the user WANTS the game to look like.
+          When the GDD's visual direction conflicts with the references, the references take priority.
+          Choose an art style that matches the visual references (or the GDD's visual concept if no
+          references were provided) — pixel art, painterly, minimalist,
           geometric, watercolor, vector-style, or any other style that fits the game's mood.
 
           # Asset List (create prompts for each)
@@ -744,6 +811,7 @@ graph:
           Read the design documents to understand the intended art style, palette, and character descriptions:
           1. Call `read_text_file_snippet` with path="docs/gdd.md" for the GDD
           2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
+          3. Call `read_text_file_snippet` with path="docs/visual_reference.md" for visual references (if available)
 
           # Process
           1. Call `describe_available_files` to find all image files in the assets/ directory
@@ -758,6 +826,7 @@ graph:
                2. AESTHETICS: Is the color palette pleasing and cohesive?
                3. CONSISTENCY: Is the art style consistent across all assets?
                4. GAME SUITABILITY: Would this work as a game asset? Is it recognizable?
+               5. REFERENCE MATCH: If visual references were provided, does this asset match the style, palette, and mood described in the visual reference analysis?
                List specific flaws if any score is below 7."
           4. Evaluate critiques
 
@@ -818,6 +887,7 @@ graph:
           Read the design documents to understand the intended art style, palette, and character descriptions:
           1. Call `read_text_file_snippet` with path="docs/gdd.md" for the GDD
           2. Call `read_text_file_snippet` with path="docs/scenario.md" for the scenario
+          3. Call `read_text_file_snippet` with path="docs/visual_reference.md" for visual references (if available)
 
           # Process
           1. Parse the Art Critic's feedback to find:
@@ -1592,10 +1662,13 @@ graph:
       carry_data: false
     # === Art Pipeline ===
     - from: Planner
+      to: Reference_Gatherer
+      trigger: true
+      carry_data: false
+    - from: Reference_Gatherer
       to: Art_Director
       trigger: true
-      carry_data: true
-      keep_message: true
+      carry_data: false
     - from: Art_Director
       to: Art_Generator
       trigger: true
