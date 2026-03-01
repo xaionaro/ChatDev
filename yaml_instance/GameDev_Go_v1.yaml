@@ -24,7 +24,7 @@ graph:
              - User says "space shooter" → What if you're the asteroid trying to dodge the ships? What if shooting makes YOU smaller? What if enemies become allies when you spare them?
           2. **Find the "juice"**: What makes one second of gameplay feel AMAZING? It's not the mechanic — it's the feedback. A satisfying CRUNCH, a dramatic slow-mo, a screen-filling chain reaction.
           3. **Add a tension**: Every great small game has a built-in dilemma — risk vs. reward, speed vs. precision, greed vs. survival. Your core mechanic MUST have a tension the player constantly negotiates.
-          4. **Layer mechanics**: A single mechanic is a toy, not a game. Keep asking: "What ELSE interacts with this?" The best games have many simple rules that create complex emergent situations when combined. More interacting systems = richer world = better game. Three systems is the bare minimum — five or more is where magic happens.
+          4. **Layer mechanics**: A single mechanic is a toy, not a game. Keep asking: "What ELSE interacts with this?" The best games have many simple rules that create complex emergent situations when combined. More interacting systems = richer world = better game. Three systems is the bare minimum — there is no upper limit.
              - Tetris: falling + rotation + line clearing + garbage rise = depth from simplicity
              - Downwell: falling + shooting + combo meter + boots = constant trade-offs
              - Vampire Survivors: auto-attack + positioning + build choices + enemy waves = strategic depth
@@ -45,7 +45,7 @@ graph:
           - Any design where the player just moves in one axis
           - Any design where enemies only differ by speed or color
           - "Snake clone", "Flappy Bird clone", or any other well-known game with minimal changes
-          - **Shallow system design** — if your entire game has fewer than 3 interacting systems, it's a toy, not a game. More systems that interact = richer emergent gameplay. Push for 4-6+ systems.
+          - **Shallow system design** — if your entire game has fewer than 3 interacting systems, it's a toy, not a game. There is no upper limit — the more systems that meaningfully interact, the richer the game. Some great games have different systems per scene/phase.
           - Enemies that are just "things that move toward you" or "things that move in a pattern" with no interaction with other game systems
           - Pickups/collectibles that just "add score" without affecting gameplay dynamics
           - Score counters as the primary player motivation — "number goes up" is not a game, it's a spreadsheet. The player should be driven by intrinsic goals: survival, territory, transformation, discovery, escalating chaos
@@ -57,7 +57,7 @@ graph:
              - OK: "You grow by eating, but growing makes you slower AND a bigger target" (has dilemma but only one system)
              - Good: see full examples below
           2. **Interacting Systems** (THIS IS WHAT SEPARATES A GOOD GAME FROM A BORING ONE):
-             Design as many interacting systems as you can — minimum 3, ideally 5+. Each system should be simple on its own, but their COMBINATIONS create rich emergent gameplay. The more systems that influence each other, the richer and more surprising the game becomes. Specify exactly how every system connects to at least 2 other systems.
+             Design as many interacting systems as the game needs to feel rich and alive — minimum 3, no upper limit. Each system should be simple on its own, but their COMBINATIONS create rich emergent gameplay. Systems can be simultaneous (all active at once) or sequential (different systems per scene/phase/level). The more systems that influence each other, the richer and more surprising the game becomes. Specify exactly how every system connects to at least 2 other systems.
              - Good example — "Orbital Harvest" (6 systems):
                * System A (gravity): Player is a small planet with gravitational pull. Nearby objects orbit you automatically.
                * System B (mass economy): Orbiting objects increase your mass → stronger gravity pull → attract more AND attract dangers. Ejecting mass (spacebar) launches objects as projectiles but weakens your pull.
@@ -81,7 +81,7 @@ graph:
                * System E (ink mixing): When your ink trail crosses enemy ink, the colors MIX — creating neutral zones that neither side controls but both can traverse at normal speed. These become contested highways. Encircling a mixed zone claims it for you BUT the mixed ink inside becomes volatile and can chain-explode unpredictably.
                * Emergent play: Aggressive expansion paints more territory (speed advantage + map control) but extends your vulnerable frontier. Ink drying means you can't just paint-and-forget — you need to patrol your borders. Mixed ink highways create shared contested routes where ambushes happen. Rain events reset everything, rewarding players who can rapidly re-establish territory.
 
-             Remember: these examples show 5-6 systems each. YOUR design should aim for similar richness. Every additional system that meaningfully interacts with existing ones multiplies the emergent possibilities exponentially.
+             Remember: these examples show 5-6 systems each, and that's just three examples. YOUR design should be as rich as it needs to be — there is no upper limit on systems. Games can also have different systems for different scenes, phases, or levels. Every additional system that meaningfully interacts with existing ones multiplies the emergent possibilities exponentially.
           3. **Player Controls**: Specify exact input mappings (arrow keys, mouse, WASD). Design controls that feel expressive — the best small games make movement itself fun. Remember this runs in browser.
           4. **Escalation Arc** (not just "win/lose"):
              - How do the first 15 seconds HOOK the player? (The player should IMMEDIATELY experience the core interaction between systems — don't hold mechanics back for later)
@@ -121,7 +121,7 @@ graph:
           **What drives the player**: [NOT "score goes up" — what is the intrinsic motivation? Territory? Transformation? Discovery? Survival? Visible progress toward a tangible goal?]
 
           ## Interacting Systems
-          For each system (minimum 3, aim for 5+):
+          For each system (minimum 3, no upper limit):
           - **System name**: [What it does in one sentence]
           - **Rules**: [The simple rules governing it]
           - **Connects to**: [List every other system it interacts with and how]
@@ -214,12 +214,12 @@ graph:
           - Score 9-10: "I can't stop playing this in my head." Score 7-8: Compelling loop with good tension. Score 5-6: Decent but predictable. Below 5: Boring. **Below 7: automatic rejection regardless of other scores.**
 
           ## 3. Mechanical Depth & System Richness (weight: 20%)
-          - How many systems are there? 3 is the bare minimum (score 5). 4-5 systems with real interactions is good (score 7-8). 6+ richly interconnected systems is excellent (score 9-10).
+          - How many systems are there? 3 is the bare minimum. More interconnected systems = higher score. No ceiling — reward ambition.
           - Does EVERY system connect to at least 2 other systems? Isolated systems are fake depth.
           - Does the core loop create real DILEMMAS — trade-offs with no obvious "right answer" that change based on context?
           - Can you imagine 10+ distinct emergent situations from the system interactions? (More systems = exponentially more emergent scenarios)
           - Would a player discover new strategies after 20 plays? Or is optimal play obvious from the start?
-          - Score 9-10: 5+ deeply interconnected systems, extraordinary emergent depth. Score 7-8: 4+ systems with genuine interactions. Score 5-6: 3 systems, some depth. Below 5: Fewer than 3 systems or no real interactions. **Below 6: automatic rejection.**
+          - Score 9-10: Many deeply interconnected systems, extraordinary emergent depth. Score 7-8: Several systems with genuine interactions. Score 5-6: 3 systems, some depth. Below 5: Fewer than 3 systems or no real interactions. **Below 6: automatic rejection.**
 
           ## 4. Visual Beauty (weight: 15%)
           - Does the visual concept evoke a specific MOOD, or is it just "pick a color palette"?
