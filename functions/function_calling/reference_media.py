@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 _OLLAMA_URL = os.getenv("OLLAMA_URL", "http://192.168.0.171:11434")
 _VISION_MODEL = os.getenv("VISION_MODEL", "qwen3-vl:32b")
-_VISION_TIMEOUT = 300
+_VISION_TIMEOUT = 600
 
 
 class _RefMediaContext:
