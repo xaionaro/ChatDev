@@ -305,6 +305,28 @@ class AgentNodeExecutor(NodeExecutor):
             stage,
         )
 
+    @staticmethod
+    def _extract_retry_after(exc: BaseException) -> int | None:
+        """Extract Retry-After seconds from an HTTP error response, if present."""
+        response = getattr(exc, "response", None)
+        if response is None:
+            return None
+        headers = getattr(response, "headers", None)
+        if headers is None:
+            return None
+        raw = headers.get("retry-after") or headers.get("Retry-After")
+        if raw is None:
+            # Also check the JSON body (our bridge includes retry_after in the body)
+            body = getattr(exc, "body", None)
+            if isinstance(body, dict):
+                raw = body.get("retry_after")
+        if raw is None:
+            return None
+        try:
+            return int(float(raw))
+        except (ValueError, TypeError):
+            return None
+
     def _execute_with_retry(
         self,
         node: Node,
@@ -314,31 +336,61 @@ class AgentNodeExecutor(NodeExecutor):
         if not retry_config or not retry_config.is_active:
             return func()
 
-        wait = wait_random_exponential(
+        normal_wait = wait_random_exponential(
             min=retry_config.min_wait_seconds,
             max=retry_config.max_wait_seconds,
         )
         retry_condition = retry_if_exception(lambda exc: retry_config.should_retry(exc))
+
+        # Track rate-limit retries separately so they don't exhaust normal attempts.
+        rate_limit_retries = 0
+        max_rate_limit_retries = 3
+
+        def _custom_wait(retry_state) -> float:
+            exc = retry_state.outcome.exception()
+            retry_after = self._extract_retry_after(exc) if exc else None
+            if retry_after and retry_after > 0:
+                return float(retry_after)
+            return normal_wait(retry_state=retry_state)
+
+        def _custom_stop(retry_state) -> bool:
+            nonlocal rate_limit_retries
+            exc = retry_state.outcome.exception()
+            retry_after = self._extract_retry_after(exc) if exc else None
+            if retry_after and retry_after > 0:
+                # Rate-limit retry: don't count toward normal max_attempts
+                rate_limit_retries += 1
+                return rate_limit_retries > max_rate_limit_retries
+            return retry_state.attempt_number >= retry_config.max_attempts
 
         def _before_sleep(retry_state) -> None:
             exc = retry_state.outcome.exception()
             if exc is None:
                 return
             attempt = retry_state.attempt_number
-            details = {
-                "attempt": attempt,
-                "max_attempts": retry_config.max_attempts,
-                "exception": exc.__class__.__name__,
-            }
-            self.log_manager.warning(
-                f"[Node: {node.id}] Model call attempt {attempt} failed: {exc}",
-                node_id=node.id,
-                details=details,
-            )
+            retry_after = self._extract_retry_after(exc)
+            if retry_after and retry_after > 0:
+                wait_min = retry_after // 60
+                self.log_manager.warning(
+                    f"[Node: {node.id}] Rate-limited, waiting {wait_min}m before retry "
+                    f"(rate-limit retry {rate_limit_retries}/{max_rate_limit_retries}): {exc}",
+                    node_id=node.id,
+                )
+            else:
+                details = {
+                    "attempt": attempt,
+                    "max_attempts": retry_config.max_attempts,
+                    "exception": exc.__class__.__name__,
+                }
+                self.log_manager.warning(
+                    f"[Node: {node.id}] Model call attempt {attempt} failed: {exc}",
+                    node_id=node.id,
+                    details=details,
+                )
 
         retrier = Retrying(
-            stop=stop_after_attempt(retry_config.max_attempts),
-            wait=wait,
+            stop=_custom_stop,
+            wait=_custom_wait,
             retry=retry_condition,
             before_sleep=_before_sleep,
             reraise=True,
